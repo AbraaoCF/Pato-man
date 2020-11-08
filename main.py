@@ -25,7 +25,7 @@ clock = pygame.time.Clock()
 
 running = True
 while running:
-    clock.tick(20)
+    clock.tick(25)
     for event in pygame.event.get():
         # Quit game
         if event.type == pygame.QUIT:
@@ -55,13 +55,13 @@ while running:
         pacman_obj = (pacman_obj[0]-10, pacman_obj[1])
 
     # End of screen ( Para não sair da tela e aparecer do lado oposto)
-    if my_direction == LEFT and pacman_obj[0] < 0:
+    if pacman_obj[0] < 0:
         pacman_obj = (790,pacman_obj[1])
-    if my_direction == UP and pacman_obj[1] < 0:
+    if pacman_obj[1] < 0:
         pacman_obj = (pacman_obj[0], 590)
-    if my_direction == RIGHT and pacman_obj[0] > 800:
+    if pacman_obj[0] >= 800:
         pacman_obj = (10,pacman_obj[1])
-    if my_direction == DOWN and pacman_obj[1] > 600:
+    if pacman_obj[1] >= 600:
         pacman_obj = (pacman_obj[0],10)
 
     # Object on screen
