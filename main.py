@@ -7,11 +7,12 @@ pygame.init()
 pygame.mixer.init()
 
 #Getting images
-background=pygame.image.load('imgs/background16.png')
+background=pygame.image.load('imgs/background.png')
 
 #Creating the sounds
 begin=pygame.mixer.Sound('sounds/begin.wav')
 
+#Stage 1 matrix. Holds information on active game state
 matriz         = [
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -62,17 +63,18 @@ class Player:
 
     def __init__(self):
         self.pos=(14*TS,26*TS)
+        self.direct=LEFT
         self.img=pygame.Surface((TS,TS))
         self.img.fill((255,255,0))
 
-    def move(self,val):
-        if val == UP:
+    def move(self):
+        if self.direct == UP:
             self.pos=(self.pos[0],self.pos[1]-TS)
-        if val == RIGHT:
+        if self.direct == RIGHT:
             self.pos=(self.pos[0]+TS,self.pos[1])
-        if val == DOWN:
+        if self.direct == DOWN:
             self.pos=(self.pos[0],self.pos[1]+TS)
-        if val == LEFT:
+        if self.direct == LEFT:
             self.pos=(self.pos[0]-TS,self.pos[1])
 
     def move_absolute(self,x,y):
@@ -87,13 +89,6 @@ TS = 16
 screen = pygame.display.set_mode((TS * 28, TS * 36))
 pygame.display.set_caption("Pato-man")
 
-# Set Pacman object and image
-pacman_img = pygame.Surface((TS,TS))
-pacman_img.fill((255,255,0))
-
-# Start Direction
-my_direction = LEFT
-
 # Clock Speed
 clock = pygame.time.Clock()
 
@@ -105,12 +100,14 @@ pygame.display.update()
 
 #plays the beginning sound
 begin.play()
-pygame.time.wait(4000);
+#waits until sound is over so game can start
+pygame.time.wait(4300);
 
 running = True
 while running:
     clock.tick(10)
     for event in pygame.event.get():
+
         # Quit game
         if event.type == pygame.QUIT:
             running = False
@@ -119,16 +116,16 @@ while running:
         # Directions keys
         if event.type == KEYDOWN:
             if event.key == K_UP:
-                my_direction = UP
+                player.direct = UP
             if event.key == K_DOWN:
-                my_direction = DOWN
+                player.direct = DOWN
             if event.key == K_LEFT:
-                my_direction = LEFT
+                player.direct = LEFT
             if event.key == K_RIGHT:
-                my_direction = RIGHT
+                player.direct = RIGHT
 
     #Handles player movement
-    player.move(my_direction)
+    player.move()
 
     if player.pos[1] == TS*17:
         if player.pos[0] < 0: player.pos = (screen.get_width() - TS, player.pos[1])
@@ -136,16 +133,16 @@ while running:
 
     #Makes Pac-man stop on walls
     if (matriz[player.pos[1] // TS][player.pos[0] // TS] == 1):
-	    if my_direction ==    UP:
+	    if player.direct == UP:
 		    player.pos = (player.pos[0], player.pos[1] + TS)
-	    if my_direction == RIGHT:
+	    if player.direct == RIGHT:
 		    player.pos = (player.pos[0] - TS, player.pos[1])
-	    if my_direction ==  DOWN:
+	    if player.direct == DOWN:
 		    player.pos = (player.pos[0], player.pos[1] - TS)
-	    if my_direction ==  LEFT:
+	    if player.direct == LEFT:
 		    player.pos = (player.pos[0] + TS, player.pos[1])
 	
-    # Objects on screen
+    # Displays objects on screen
     screen.fill((0, 0, 0))
     screen.blit(background,(0,3*TS))
     screen.blit(player.img,player.pos)
