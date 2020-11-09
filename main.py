@@ -61,7 +61,8 @@ class Player:
 
     def __init__(self):
         self.pos=(14*TS,26*TS)
-        self.direct=LEFT
+        self.direct = LEFT
+        self.last_direction = LEFT
         self.img=pygame.Surface((TS,TS))
         self.img.fill((255,255,0))
 
@@ -74,6 +75,28 @@ class Player:
             self.pos=(self.pos[0],self.pos[1]+TS)
         if self.direct == LEFT:
             self.pos=(self.pos[0]-TS,self.pos[1])
+        
+        if self.pos[1] == TS*17:
+            if self.pos[0] < 0:
+                self.pos = (screen.get_width() - TS, self.pos[1])
+            elif self.pos[0] >= screen.get_width():
+                self.pos = (0 - TS, self.pos[1])
+        
+        if (matriz[self.pos[1] // TS][self.pos[0] // TS] == 1):
+            if self.direct == UP:
+                self.pos = (self.pos[0], self.pos[1] + TS)
+            if self.direct == RIGHT:
+                self.pos = (self.pos[0] - TS, self.pos[1])
+            if self.direct == DOWN:
+                self.pos = (self.pos[0], self.pos[1] - TS)
+            if self.direct == LEFT:
+                self.pos = (self.pos[0] + TS, self.pos[1])
+                
+            if self.last_direction != self.direct:
+                self.direct = self.last_direction
+                self.move()
+        
+        self.last_direction = self.direct
 
     def move_absolute(self,x,y):
         self.pos=(x,y)
@@ -127,40 +150,6 @@ while running:
 
     #Handles player movement
     player.move()
-
-    if player.pos[1] == TS*17:
-        if player.pos[0] < 0:
-            player.pos = (screen.get_width() - TS, player.pos[1])
-        elif player.pos[0] >= screen.get_width():
-            player.pos = (0 - TS, player.pos[1])
-
-    #Makes Pac-man stop on walls
-    if (matriz[player.pos[1] // TS][player.pos[0] // TS] == 1):
-        if player.direct == UP:
-                player.pos = (player.pos[0], player.pos[1] + TS)
-        if player.direct == RIGHT:
-                player.pos = (player.pos[0] - TS, player.pos[1])
-        if player.direct == DOWN:
-                player.pos = (player.pos[0], player.pos[1] - TS)
-        if player.direct == LEFT:
-                player.pos = (player.pos[0] + TS, player.pos[1])
-	
-      # Not change direction on walls
-        if last_direction != player.direct:
-            player.direct = last_direction
-            player.move()
-
-     # Corners
-        if (matriz[player.pos[1] // TS][player.pos[0] // TS] == 1):
-            if player.direct == UP:
-                player.pos = (player.pos[0], player.pos[1] + TS)
-            if player.direct == RIGHT:
-                player.pos = (player.pos[0] - TS, player.pos[1])
-            if player.direct == DOWN:
-                player.pos = (player.pos[0], player.pos[1] - TS)
-            if player.direct == LEFT:
-                player.pos = (player.pos[0] + TS, player.pos[1])
-    last_direction = player.direct
   
     #Display objects on screen
     screen.fill((0, 0, 0))
