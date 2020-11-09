@@ -104,15 +104,6 @@ while running:
     # Directions update
     change_direction(my_direction)
 
-    # End of screen ( Para não sair da tela e aparecer do lado oposto)
-    #if pacman_obj[0] < 0:
-    #    pacman_obj = (screen.get_width()-TS,pacman_obj[1])
-    #if pacman_obj[1] < 0:
-    #    pacman_obj = (pacman_obj[0], screen.get_height()-TS)
-    #if pacman_obj[0] >= screen.get_width():
-    #    pacman_obj = (0,pacman_obj[1])
-    #if pacman_obj[1] >= screen.get_height():
-    #    pacman_obj = (pacman_obj[0],0)
     if pacman_obj[1] == TS*17:
         if pacman_obj[0] < 0: pacman_obj = (screen.get_width() - TS, pacman_obj[1])
         elif pacman_obj[0] >= screen.get_width(): pacman_obj = (0 - TS, pacman_obj[1])
