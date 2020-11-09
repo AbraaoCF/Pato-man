@@ -136,20 +136,20 @@ while running:
 
     #Makes Pac-man stop on walls
     if (matriz[player.pos[1] // TS][player.pos[0] // TS] == 1):
-	    if player.direct == UP:
-		    player.pos = (player.pos[0], player.pos[1] + TS)
-	    if player.direct == RIGHT:
-		    player.pos = (player.pos[0] - TS, player.pos[1])
-	    if player.direct == DOWN:
-		    player.pos = (player.pos[0], player.pos[1] - TS)
-	    if player.direct == LEFT:
-		    player.pos = (player.pos[0] + TS, player.pos[1])
+        if player.direct == UP:
+                player.pos = (player.pos[0], player.pos[1] + TS)
+        if player.direct == RIGHT:
+                player.pos = (player.pos[0] - TS, player.pos[1])
+        if player.direct == DOWN:
+                player.pos = (player.pos[0], player.pos[1] - TS)
+        if player.direct == LEFT:
+                player.pos = (player.pos[0] + TS, player.pos[1])
 	
       # Not change direction on walls
-      if last_direction != player.direct:
-         player.direct = last_direction
-         player.move()
-      last_direction = player.direct
+        if last_direction != player.direct:
+            player.direct = last_direction
+            player.move()
+    last_direction = player.direct
   
     #Display objects on screen
     screen.fill((0, 0, 0))
