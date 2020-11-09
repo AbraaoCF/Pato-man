@@ -1,6 +1,5 @@
 import pygame
 from pygame.locals import *
-pygame.init()
 
 #Initializing modules
 pygame.init()
@@ -13,7 +12,7 @@ background=pygame.image.load('imgs/background.png')
 begin=pygame.mixer.Sound('sounds/begin.wav')
 
 #Stage 1 matrix. Holds information on active game state
-matriz         = [
+matriz = [
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -47,10 +46,9 @@ matriz         = [
 [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
 [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
 [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-			]
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],]
 
-# Directions
+#Directions
 UP    = 0
 RIGHT = 1
 DOWN  = 2
@@ -80,25 +78,28 @@ class Player:
     def move_absolute(self,x,y):
         self.pos=(x,y)
 
-player=Player()
+player = Player()
 
 #Tile Size (Define the number of pixels on each tile)
 TS = 16
 
-# Screen
+#Screen
 screen = pygame.display.set_mode((TS * 28, TS * 36))
 pygame.display.set_caption("Pato-man")
 
-# Clock Speed
+
+last_direction = LEFT
+
+#Clock Speed
 clock = pygame.time.Clock()
 
-# Inital screen appearence
+#Inital screen appearence
 screen.fill((0, 0, 0))
 screen.blit(background,(0,3*TS));
 screen.blit(player.img,player.pos)
 pygame.display.update()
 
-#plays the beginning sound
+#Plays the beginning sound
 begin.play()
 #waits until sound is over so game can start
 pygame.time.wait(4300);
@@ -107,13 +108,13 @@ running = True
 while running:
     clock.tick(10)
     for event in pygame.event.get():
-
+  
         # Quit game
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
 
-        # Directions keys
+        #Directions keys
         if event.type == KEYDOWN:
             if event.key == K_UP:
                 player.direct = UP
@@ -128,8 +129,10 @@ while running:
     player.move()
 
     if player.pos[1] == TS*17:
-        if player.pos[0] < 0: player.pos = (screen.get_width() - TS, player.pos[1])
-        elif player.pos[0] >= screen.get_width(): player.pos = (0 - TS, player.pos[1])
+        if player.pos[0] < 0:
+            player.pos = (screen.get_width() - TS, player.pos[1])
+        elif player.pos[0] >= screen.get_width():
+            player.pos = (0 - TS, player.pos[1])
 
     #Makes Pac-man stop on walls
     if (matriz[player.pos[1] // TS][player.pos[0] // TS] == 1):
@@ -142,7 +145,13 @@ while running:
 	    if player.direct == LEFT:
 		    player.pos = (player.pos[0] + TS, player.pos[1])
 	
-    # Displays objects on screen
+      # Not change direction on walls
+      if last_direction != player.direct:
+         player.direct = last_direction
+         player.move()
+      last_direction = player.direct
+  
+    #Display objects on screen
     screen.fill((0, 0, 0))
     screen.blit(background,(0,3*TS))
     screen.blit(player.img,player.pos)
