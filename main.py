@@ -2,6 +2,16 @@ import pygame
 from pygame.locals import *
 pygame.init()
 
+#Tile Size (tamanho de cada quadrado)
+TS = 16 
+
+pygame.mixer.init()
+begin=pygame.mixer.Sound('sounds/begin.wav')
+begin.play()
+#Getting background img
+background=pygame.image.load('imgs/background'+str(TS)+'.png')
+
+
 # Directions
 UP = 0
 RIGHT = 1
@@ -9,12 +19,12 @@ DOWN = 2
 LEFT = 3
 
 # Screen
-screen = pygame.display.set_mode((800, 600))
+screen = pygame.display.set_mode((TS*28, TS*36))
 pygame.display.set_caption("Pato-man")
 
 # Set Pacman object and image
-pacman_obj = (10,10)
-pacman_img = pygame.Surface((10,10))
+pacman_obj = (0,0)
+pacman_img = pygame.Surface((TS,TS))
 pacman_img.fill((255,255,0))
 
 # Start Direction
@@ -25,11 +35,12 @@ clock = pygame.time.Clock()
 
 running = True
 while running:
-    clock.tick(25)
+    clock.tick(10)
     for event in pygame.event.get():
         # Quit game
         if event.type == pygame.QUIT:
             running = False
+            pygame.quit()
 
         # Directions keys
         if event.type == KEYDOWN:
@@ -41,30 +52,46 @@ while running:
                 my_direction = LEFT
             if event.key == K_RIGHT:
                 my_direction = RIGHT
-    # Screen
-    screen.fill((0, 0, 0))
 
     # Directions update
     if my_direction == UP:
-        pacman_obj = (pacman_obj[0],pacman_obj[1]-10)
+        pacman_obj = (pacman_obj[0],pacman_obj[1]-TS)
     if my_direction == RIGHT:
-        pacman_obj = (pacman_obj[0]+10,pacman_obj[1])
+        pacman_obj = (pacman_obj[0]+TS,pacman_obj[1])
     if my_direction == DOWN:
-        pacman_obj = (pacman_obj[0], pacman_obj[1]+10)
+        pacman_obj = (pacman_obj[0], pacman_obj[1]+TS)
     if my_direction == LEFT:
-        pacman_obj = (pacman_obj[0]-10, pacman_obj[1])
+        pacman_obj = (pacman_obj[0]-TS, pacman_obj[1])
 
     # End of screen ( Para não sair da tela e aparecer do lado oposto)
+    #if pacman_obj[0] < 0:
+    #    pacman_obj = (screen.get_width()-TS,pacman_obj[1])
+    #if pacman_obj[1] < 0:
+    #    pacman_obj = (pacman_obj[0], screen.get_height()-TS)
+    #if pacman_obj[0] >= screen.get_width():
+    #    pacman_obj = (0,pacman_obj[1])
+    #if pacman_obj[1] >= screen.get_height():
+    #    pacman_obj = (pacman_obj[0],0)
+    if pacman_obj[1]==TS*17:
+        if pacman_obj[0] < 0:
+            pacman_obj = (screen.get_width()-TS,pacman_obj[1])
+        elif pacman_obj[0]>=screen.get_width():
+            pacman_obj = (0-TS,pacman_obj[1])
+    #end of screen (Pacman para ao chegar na borda da tela)
     if pacman_obj[0] < 0:
-        pacman_obj = (790,pacman_obj[1])
+        pacman_obj = (0,pacman_obj[1])
     if pacman_obj[1] < 0:
-        pacman_obj = (pacman_obj[0], 590)
-    if pacman_obj[0] >= 800:
-        pacman_obj = (10,pacman_obj[1])
-    if pacman_obj[1] >= 600:
-        pacman_obj = (pacman_obj[0],10)
+        pacman_obj = (pacman_obj[0],0)
+    if pacman_obj[0] >= screen.get_width()-TS:
+        pacman_obj = (screen.get_width()-TS,pacman_obj[1])
+    if pacman_obj[1] >= screen.get_height()-TS:
+        pacman_obj = (pacman_obj[0],screen.get_height()-TS)
 
+    # Screen
+    screen.fill((0, 0, 0))
+    
     # Object on screen
-    screen.blit(pacman_img,(pacman_obj[0],pacman_obj[1]))
+    screen.blit(background,(0,3*TS));
+    screen.blit(pacman_img,pacman_obj)
     pygame.display.update()
 
