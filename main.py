@@ -9,10 +9,6 @@ pygame.mixer.init()
 background = pygame.image.load('imgs/background.png')
 powerImg = pygame.image.load('imgs/corn.png')
 
-#Create coin
-coinImg = pygame.Surface((4,4))
-coinImg.fill((255,255,0))
-
 #Creating the sounds
 begin = pygame.mixer.Sound('sounds/begin.wav')
 
@@ -71,9 +67,8 @@ class Player:
 
     def __init__(self):
         self.pos = (14*TS,26*TS)
-        self.gridPosition = (26,14)
         self.direct = LEFT
-        self.last_direction = LEFT
+        self.last_direct = LEFT
         self.img = pygame.Surface((TS,TS))
         self.img.fill((255,255,255))
 
@@ -81,26 +76,20 @@ class Player:
 
         if self.direct == UP:
             self.pos = (self.pos[0],self.pos[1]-TS)
-            self.gridPosition = (self.gridPosition[0] - 1, self.gridPosition[1])
         if self.direct == RIGHT:
             self.pos = (self.pos[0]+TS,self.pos[1])
-            self.gridPosition = (self.gridPosition[0], self.gridPosition[1] + 1)
         if self.direct == DOWN:
             self.pos = (self.pos[0],self.pos[1]+TS)
-            self.gridPosition = (self.gridPosition[0] + 1, self.gridPosition[1])
         if self.direct == LEFT:
             self.pos=(self.pos[0]-TS,self.pos[1])
-            self.gridPosition = (self.gridPosition[0], self.gridPosition[1] - 1)
         
-        if self.pos[1] == TS*17:
+        if self.pos[1] == 17*TS:
             if self.pos[0] < 0:
-                self.pos = (screen.get_width() - TS, self.pos[1])
-                self.gridPosition = (14,27)
+                self.move_absolute(screen.get_width()-TS,self.pos[1])
             elif self.pos[0] >= screen.get_width():
-                self.pos = (0 - TS, self.pos[1])
-                self.gridPosition = (14,0)
+                self.move_absolute(0,self.pos[1])
         
-        if (matriz[self.pos[1] // TS][self.pos[0] // TS] == 1):
+        if matriz[self.grid_pos()[0]][self.grid_pos()[1]] == 1:
             if self.direct == UP:
                 self.pos = (self.pos[0], self.pos[1] + TS)
             if self.direct == RIGHT:
@@ -110,21 +99,27 @@ class Player:
             if self.direct == LEFT:
                 self.pos = (self.pos[0] + TS, self.pos[1])
                 
-            if self.last_direction != self.direct:
-                self.direct = self.last_direction
+            if self.last_direct != self.direct:
+                self.direct = self.last_direct
                 self.move()
         
-        self.last_direction = self.direct
+        self.last_direct = self.direct
 
     def move_absolute(self,x,y):
         self.pos=(x,y)
 
+    def grid_pos(self):
+        return (self.pos[1]//16,self.pos[0]//16)
+
 player = Player()
+
+#Create coin
+coinImg = pygame.Surface((4,4))
+coinImg.fill((255,255,0))
 
 #Screen
 screen = pygame.display.set_mode((TS * 28, TS * 36))
 pygame.display.set_caption("Pato-man")
-last_direction = LEFT
 
 #Clock Speed
 clock = pygame.time.Clock()
@@ -172,7 +167,7 @@ while running:
 
     #Handles player movement
     player.move()
-    matriz[player.pos[1] // TS][player.pos[0] // TS] = 0
+    matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
 
 
     #Display objects on screen
