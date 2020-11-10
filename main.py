@@ -7,10 +7,11 @@ pygame.mixer.init()
 
 #Getting images
 background = pygame.image.load('imgs/background.png')
-#coinImg = pygame.draw.circle(surface, (255,0,0), (0,0), 8)
+powerImg = pygame.image.load('imgs/corn.png')
+
+#Create coin
 coinImg = pygame.Surface((4,4))
 coinImg.fill((255,255,0))
-powerImg = pygame.image.load('imgs/corn.png')
 
 #Creating the sounds
 begin = pygame.mixer.Sound('sounds/begin.wav')
@@ -74,7 +75,7 @@ class Player:
         self.direct = LEFT
         self.last_direction = LEFT
         self.img = pygame.Surface((TS,TS))
-        self.img.fill((255,255,250))
+        self.img.fill((255,255,255))
 
     def move(self):
 
@@ -133,6 +134,7 @@ screen.fill((0, 0, 0))
 screen.blit(background,(0,3*TS));
 screen.blit(player.img,player.pos)
 
+#Display initial coins and powers on screen
 for i in range(len(matriz)):
         for j in range(len(matriz[i])):
             if matriz[i][j] == 2:
@@ -144,7 +146,7 @@ pygame.display.update()
 
 #Plays the beginning sound
 begin.play()
-#waits until sound is over so game can start
+#Waits until sound is over so game can start
 pygame.time.wait(4300);
 
 running = True
@@ -152,7 +154,7 @@ while running:
     clock.tick(10)
     for event in pygame.event.get():
   
-        # Quit game
+        #Quit game
         if event.type == pygame.QUIT:
             running = False
             pygame.quit()
@@ -175,10 +177,10 @@ while running:
 
     #Display objects on screen
     screen.fill((0, 0, 0))
-    screen.blit(background,(0,3*TS))
+    screen.blit(background,(0, 3*TS))
     screen.blit(player.img,player.pos)  
 
-    
+    #Display coins and powers on screen
     for i in range(len(matriz)):
         for j in range(len(matriz[i])):
             if matriz[i][j] == 2:
