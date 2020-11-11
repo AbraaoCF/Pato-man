@@ -13,8 +13,8 @@ coin_img = pygame.image.load('imgs/bit.png')
 
 #Creating the sounds
 begin = pygame.mixer.Sound('sounds/begin.wav')
-eat1 = pygame.mixer.Sound('sounds/pacman_chomp_one.wav')
-eat2 = pygame.mixer.Sound('sounds/pacman_chomp_two.wav')
+eat1 = pygame.mixer.Sound('sounds/pac_chomp_one_one.wav')
+eat2 = pygame.mixer.Sound('sounds/pac_chomp_two_two.wav')
 
 #Stage 1 matrix. Holds information on active game state
 #State 0 --> Empty
