@@ -7,7 +7,9 @@ pygame.mixer.init()
 
 #Getting images
 background = pygame.image.load('imgs/background.png')
-powerImg = pygame.image.load('imgs/corn.png')
+power_img = pygame.image.load('imgs/corn.png')
+coin_img = pygame.image.load('imgs/bit.png')
+
 
 #Creating the sounds
 begin = pygame.mixer.Sound('sounds/begin.wav')
@@ -138,10 +140,6 @@ class Score:
 player = Player()
 score=Score()
 
-#Create coin
-coinImg = pygame.Surface((4,4))
-coinImg.fill((255,255,0))
-
 #Screen
 screen = pygame.display.set_mode((TS * 28, TS * 36))
 pygame.display.set_caption("Pato-man")
@@ -159,9 +157,9 @@ screen.blit(player.img,player.pos)
 for i in range(len(matriz)):
         for j in range(len(matriz[i])):
             if matriz[i][j] == 2:
-                screen.blit(coinImg, (j * TS + 6, i * TS + 6))
+                screen.blit(coin_img, (j * TS, i * TS))
             if matriz[i][j] == 3:
-                screen.blit(powerImg, (j * TS, i * TS))
+                screen.blit(power_img, (j * TS, i * TS))
 
 pygame.display.update()
 
@@ -211,8 +209,8 @@ while running:
     for i in range(len(matriz)):
         for j in range(len(matriz[i])):
             if matriz[i][j] == 2:
-               screen.blit(coinImg, (j * TS + 6, i * TS + 6))
+               screen.blit(coin_img, (j * TS, i * TS))
             if matriz[i][j] == 3:
-                screen.blit(powerImg, (j * TS, i * TS))
+                screen.blit(power_img, (j * TS, i * TS))
 
     pygame.display.update()
