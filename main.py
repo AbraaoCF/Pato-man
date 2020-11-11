@@ -13,6 +13,8 @@ coin_img = pygame.image.load('imgs/bit.png')
 
 #Creating the sounds
 begin = pygame.mixer.Sound('sounds/begin.wav')
+eat1 = pygame.mixer.Sound('sounds/pac_chomp_one.wav')
+eat2 = pygame.mixer.Sound('sounds/pac_chomp_two.wav')
 
 #Stage 1 matrix. Holds information on active game state
 #State 0 --> Empty
@@ -202,9 +204,12 @@ begin.play()
 #Waits until sound is over so game can start
 pygame.time.wait(4300);
 
+#counter to change chomp sound
+counter = 0
+
 running = True
 while running:
-    clock.tick(20)
+    clock.tick(15)
     for event in pygame.event.get():
   
         #Quit game
@@ -229,9 +234,25 @@ while running:
     if matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 2:
         matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
         score.add(10)
+
+        #change chomp sound
+        if counter % 2 == 0:
+            eat1.play()
+        else:
+            eat2.play()
+        counter += 1
+
     elif matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 3:
         matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
         score.add(50)
+
+        #change chomp sound
+        if counter % 2 == 0:
+            eat1.play()
+        else:
+            eat2.play()
+        counter += 1
+
     
     #Display objects on screen
     screen.fill((0, 0, 0))
