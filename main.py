@@ -111,7 +111,32 @@ class Player:
     def grid_pos(self):
         return (self.pos[1]//16,self.pos[0]//16)
 
+class Score:
+
+    def __init__(self):
+        self.font=pygame.font.Font("fonts/emulogic.ttf",16) #loads the font file with letter size equal to 16 pixels
+
+        self.score='00' #starting score
+        self.high_score='00' #Starts as last high value if played before, need to implement whan we get there
+
+        self.high_score_text=self.font.render(self.high_score,False,pygame.Color("white")) #makes starter high score text 
+        self.score_text=self.font.render(self.score,False,pygame.Color("white")) #makes starter score text
+        
+    def display(self):
+        screen.blit(self.font.render("high score",False,pygame.Color("white")),(144,0)) #display "high score" on screen
+        screen.blit(self.score_text,(112-16*len(self.score),16)) #display current score on screen
+        screen.blit(self.high_score_text,(272-16*len(self.high_score),16)) #display current high score on screen
+
+
+    def add(self,num):
+        self.score=str(int(self.score)+num) #updates current score
+        if int(self.score)>int(self.high_score): #checks if we need new high score
+            self.high_score=self.score #gets new high score value
+            self.high_score_text=self.font.render(self.high_score,False,pygame.Color("white")) #makes new high score text
+        self.score_text=self.font.render(self.score,False,pygame.Color("white")) #makes new score text
+    
 player = Player()
+score=Score()
 
 #Create coin
 coinImg = pygame.Surface((4,4))
@@ -126,7 +151,8 @@ clock = pygame.time.Clock()
 
 #Inital screen appearence
 screen.fill((0, 0, 0))
-screen.blit(background,(0,3*TS));
+score.display()
+screen.blit(background,(0,3*TS))
 screen.blit(player.img,player.pos)
 
 #Display initial coins and powers on screen
@@ -167,11 +193,17 @@ while running:
 
     #Handles player movement
     player.move()
-    matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
-
-
+    
+    if matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 2:
+        matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
+        score.add(10)
+    elif matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 3:
+        matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
+        score.add(50)
+    
     #Display objects on screen
     screen.fill((0, 0, 0))
+    score.display()
     screen.blit(background,(0, 3*TS))
     screen.blit(player.img,player.pos)  
 
