@@ -41,7 +41,7 @@ LEFT  = 3
 #Tile Size (Define the number of pixels on each tile)
 TS = 8
 
-class Player:
+class Player(pygame.sprite.Sprite):
 
     def __init__(self):
         self.pos = (28*TS,52*TS)
@@ -51,6 +51,8 @@ class Player:
         self.change = 0
         self.img=0
         self.imgs = [patoFC,patoFD,patoFB,patoFE,patoAC,patoAD,patoAB,patoAE]
+        self.image = patoFC
+        self.rect = self.image.get_rect()
         self.aberto=False
 
     def move(self):
@@ -135,9 +137,47 @@ class Score:
             self.high_score=self.score #gets new high score value
             self.high_score_text=self.font.render(self.high_score,False,pygame.Color("white")) #makes new high score text
         self.score_text=self.font.render(self.score,False,pygame.Color("white")) #makes new score text
-    
+
+class Coins(pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = coin_img
+        self.rect = self.image.get_rect()
+
+
+class Power(pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = power_img
+        self.rect = self.image.get_rect()
+
 player = Player()
-score=Score()
+score = Score()
+
+#Create the groups of sprites
+all_sprites_list = pygame.sprite.Group() 
+coins_list = pygame.sprite.Group()
+power_list = pygame.sprite.Group()
+
+#Create the sprites of coins and powers and put them in the respective groups
+for i in range(len(matriz)):
+    for j in range(len(matriz[0])):
+        coins = Coins()
+        power = Power()
+
+        if (matriz[i][j] == 2):
+            coins.rect.x = j * TS
+            coins.rect.y = i * TS
+            coins_list.add(coins)
+            all_sprites_list.add(coins)
+
+        if (matriz[i][j] == 3):
+            power.rect.x = j * TS
+            power.rect.y = i * TS
+            power_list.add(power)
+            all_sprites_list.add(power)
 
 #Screen
 screen = pygame.display.set_mode((TS * 56, TS * 72))
@@ -150,15 +190,7 @@ clock = pygame.time.Clock()
 screen.fill((0, 0, 0))
 score.display()
 screen.blit(background,(0,6*TS))
-
-#Display initial coins and powers on screen
-for i in range(len(matriz)):
-        for j in range(len(matriz[i])):
-            if matriz[i][j] == 2:
-                screen.blit(coin_img, (j * TS, i * TS))
-            if matriz[i][j] == 3:
-                screen.blit(power_img, (j * TS, i * TS))
-
+all_sprites_list.draw(screen) #Print the sprites of the group of all sprites
 player.display() #display player
 
 pygame.display.update()
@@ -206,6 +238,12 @@ while running:
         player.change = 0
 
     if matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 2:
+        
+        for coins in coins_list: #Search the atual coins in coins_list
+            if coins.rect.x == player.grid_pos()[1] * TS and coins.rect.y == player.grid_pos()[0] * TS:
+                coins.kill() #Remove from all groups
+                break
+
         matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
         score.add(10)
 
@@ -217,6 +255,12 @@ while running:
         counter = counter == False
 
     elif matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 3:
+        
+        for power in power_list: #Search the atual power in power_list
+            if power.rect.x == player.grid_pos()[1] * TS and power.rect.y == player.grid_pos()[0] * TS:
+                power.kill() #Remove from all groups
+                break
+
         matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
         score.add(50)
 
@@ -235,11 +279,6 @@ while running:
     player.display()  
 
     #Display coins and powers on screen
-    for i in range(len(matriz)):
-        for j in range(len(matriz[i])):
-            if matriz[i][j] == 2:
-               screen.blit(coin_img, (j * TS, i * TS))
-            if matriz[i][j] == 3:
-                screen.blit(power_img, (j * TS, i * TS))
+    all_sprites_list.draw(screen)
 
     pygame.display.update()
