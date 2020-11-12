@@ -12,9 +12,11 @@ coin_img = pygame.image.load('imgs/bit.png')
 
 
 #Creating the sounds
+#begin = pygame.mixer.Sound('sounds/begin.mp3')
+eat1 = pygame.mixer.Sound('sounds/pac_chomp_one.wav')
+eat2 = pygame.mixer.Sound('sounds/pac_chomp_two.wav')
+music1 = pygame.mixer.Sound('sounds/music1.wav')
 begin = pygame.mixer.Sound('sounds/begin.wav')
-eat1 = pygame.mixer.Sound('sounds/pac_chomp_one_one.wav')
-eat2 = pygame.mixer.Sound('sounds/pac_chomp_two_two.wav')
 
 #Stage 1 matrix. Holds information on active game state
 #State 0 --> Empty
@@ -187,7 +189,6 @@ clock = pygame.time.Clock()
 screen.fill((0, 0, 0))
 score.display()
 screen.blit(background,(0,6*TS))
-screen.blit(player.img,player.pos)
 
 #Display initial coins and powers on screen
 for i in range(len(matriz)):
@@ -197,12 +198,16 @@ for i in range(len(matriz)):
             if matriz[i][j] == 3:
                 screen.blit(power_img, (j * TS, i * TS))
 
+screen.blit(player.img,player.pos) #Display player
+
 pygame.display.update()
 
 #Plays the beginning sound
 begin.play()
+
 #Waits until sound is over so game can start
-pygame.time.wait(4300);
+pygame.time.wait(4300)
+music1.play(loops=-1)
 
 #counter to change chomp sound
 counter = 0
