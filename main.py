@@ -47,11 +47,17 @@ class Player:
         self.pos = (28*TS,52*TS)
         self.direct = LEFT
         self.last_direct = LEFT
+        self.memory_direct = LEFT
+        self.change = 0
         self.img=0
         self.imgs = [patoFC,patoFD,patoFB,patoFE,patoAC,patoAD,patoAB,patoAE]
         self.aberto=False
 
     def move(self):
+
+	#Try (only one time) to do the memory direction
+        if self.change == 1:
+           self.direct = self.memory_direct
 
         if self.direct == UP:
             self.pos = (self.pos[0],self.pos[1]-TS)
@@ -79,6 +85,11 @@ class Player:
                 self.pos = (self.pos[0] + TS, self.pos[1])
                 
             if self.last_direct != self.direct:
+
+                #If direction is invalid, memory_direction save it
+                self.memory_direct = self.direct
+                self.change += 1
+
                 self.direct = self.last_direct
                 self.move()
         
@@ -174,6 +185,7 @@ while running:
 
         #Directions keys
         if event.type == KEYDOWN:
+            player.change = 0 #If key is used, memory_direction has to update
             if event.key == K_UP:
                 player.direct = UP
             if event.key == K_DOWN:
@@ -186,6 +198,13 @@ while running:
     #Handles player movement
     player.move()
     player.aberto=not player.aberto
+
+    #If after .move() memory_direction failed or not
+    if player.change == 2:
+        player.change = 1
+    else:
+        player.change = 0
+
     if matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 2:
         matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
         score.add(10)
