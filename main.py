@@ -9,10 +9,12 @@ pygame.mixer.init()
 background = pygame.image.load('imgs/background.png')
 power_img = pygame.image.load('imgs/corn.png')
 coin_img = pygame.image.load('imgs/bit.png')
-
+patoAE = pygame.image.load('imgs/patoAE.png')
+patoAD = pygame.image.load('imgs/patoAD.png')
+patoFE = pygame.image.load('imgs/patoFE.png')
+patoFD = pygame.image.load('imgs/patoFD.png')
 
 #Creating the sounds
-#begin = pygame.mixer.Sound('sounds/begin.mp3')
 eat1 = pygame.mixer.Sound('sounds/pac_chomp_one.wav')
 eat2 = pygame.mixer.Sound('sounds/pac_chomp_two.wav')
 music1 = pygame.mixer.Sound('sounds/music1.wav')
@@ -109,8 +111,9 @@ class Player:
         self.pos = (28*TS,52*TS)
         self.direct = LEFT
         self.last_direct = LEFT
-        self.img = pygame.Surface((2*TS,2*TS))
-        self.img.fill((255,255,255))
+        self.img=0
+        self.imgs = [patoFE,patoFD,patoAE,patoAD]
+        self.aberto=False
 
     def move(self):
 
@@ -151,6 +154,13 @@ class Player:
     def grid_pos(self):
         return (self.pos[1]//TS,self.pos[0]//TS)
 
+    def display(self):
+    	if self.aberto:
+    	   self.img+=2
+    	if self.direct==RIGHT:
+    	   self.img+=1
+    	screen.blit(self.imgs[self.img],(self.pos[0]-4,self.pos[1]-8))
+    	self.img=0
 class Score:
 
     def __init__(self):
@@ -198,7 +208,7 @@ for i in range(len(matriz)):
             if matriz[i][j] == 3:
                 screen.blit(power_img, (j * TS, i * TS))
 
-screen.blit(player.img,player.pos) #Display player
+player.display() #display player
 
 pygame.display.update()
 
@@ -235,7 +245,7 @@ while running:
 
     #Handles player movement
     player.move()
-    
+    player.aberto=not player.aberto
     if matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 2:
         matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
         score.add(10)
@@ -263,7 +273,7 @@ while running:
     screen.fill((0, 0, 0))
     score.display()
     screen.blit(background,(0, 6*TS))
-    screen.blit(player.img,player.pos)  
+    player.display()  
 
     #Display coins and powers on screen
     for i in range(len(matriz)):
