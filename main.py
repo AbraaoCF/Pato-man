@@ -9,10 +9,14 @@ pygame.mixer.init()
 background = pygame.image.load('imgs/background.png')
 power_img = pygame.image.load('imgs/corn.png')
 coin_img = pygame.image.load('imgs/bit.png')
-patoAE = pygame.image.load('imgs/patoAE.png')
-patoAD = pygame.image.load('imgs/patoAD.png')
-patoFE = pygame.image.load('imgs/patoFE.png')
+patoFC = pygame.image.load('imgs/patoFC.png')
 patoFD = pygame.image.load('imgs/patoFD.png')
+patoFB = pygame.image.load('imgs/patoFB.png')
+patoFE = pygame.image.load('imgs/patoFE.png')
+patoAC = pygame.image.load('imgs/patoAC.png')
+patoAD = pygame.image.load('imgs/patoAD.png')
+patoAB = pygame.image.load('imgs/patoAB.png')
+patoAE = pygame.image.load('imgs/patoAE.png')
 
 #Creating the sounds
 eat1 = pygame.mixer.Sound('sounds/pac_chomp_one.wav')
@@ -112,7 +116,7 @@ class Player:
         self.direct = LEFT
         self.last_direct = LEFT
         self.img=0
-        self.imgs = [patoFE,patoFD,patoAE,patoAD]
+        self.imgs = [patoFC,patoFD,patoFB,patoFE,patoAC,patoAD,patoAB,patoAE]
         self.aberto=False
 
     def move(self):
@@ -156,9 +160,13 @@ class Player:
 
     def display(self):
     	if self.aberto:
-    	   self.img+=2
+    	   self.img+=4
     	if self.direct==RIGHT:
     	   self.img+=1
+    	elif self.direct==DOWN:
+    	   self.img+=2
+    	elif self.direct==LEFT:
+    	   self.img+=3
     	screen.blit(self.imgs[self.img],(self.pos[0]-4,self.pos[1]-8))
     	self.img=0
 class Score:
