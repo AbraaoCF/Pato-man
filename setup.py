@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Pato-man", # Replace with your own username
-    version="0.4.2",
+    version="0.4.3",
     author="Abraão Caiana de Freitas",
     author_email="abraao.freitas@ccc.ufcg.edu.br",
     description="Pac-man with ducks",
@@ -25,7 +25,7 @@ setuptools.setup(
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [
-            'patoman=Pato-man.main:game'
+            'patoman=Patoman.main:game'
             ]
         }
 )
