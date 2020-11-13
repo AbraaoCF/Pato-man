@@ -252,7 +252,7 @@ while running:
             eat1.play()
         else:
             eat2.play()
-        counter = counter == False
+        counter = not counter
 
     elif matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 3:
         
@@ -269,7 +269,10 @@ while running:
             eat1.play()
         else:
             eat2.play()
-        counter = counter == False
+        counter = not counter
+    if len(power_list)==0 and len(coins_list)==0:
+        running=False
+        pygame.quit()
 
     
     #Display objects on screen
