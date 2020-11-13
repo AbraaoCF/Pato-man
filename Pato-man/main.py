@@ -1,6 +1,7 @@
 import pygame
 import os
 from pygame.locals import *
+
 import Matriz
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
