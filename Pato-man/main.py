@@ -1,287 +1,308 @@
 import pygame
+import os
 from pygame.locals import *
 import Matriz
 
-#Initializing modules
-pygame.init()
-pygame.mixer.init()
+main_dir = os.path.split(os.path.abspath(__file__))[0]
 
-#Getting images
-background = pygame.image.load('imgs/background.png')
-power_img = pygame.image.load('imgs/corn.png')
-coin_img = pygame.image.load('imgs/bit.png')
-patoFC = pygame.image.load('imgs/patoFC.png')
-patoFD = pygame.image.load('imgs/patoFD.png')
-patoFB = pygame.image.load('imgs/patoFB.png')
-patoFE = pygame.image.load('imgs/patoFE.png')
-patoAC = pygame.image.load('imgs/patoAC.png')
-patoAD = pygame.image.load('imgs/patoAD.png')
-patoAB = pygame.image.load('imgs/patoAB.png')
-patoAE = pygame.image.load('imgs/patoAE.png')
+def load_img(name):
+   path=os.path.join(main_dir,"imgs",name)
+   return pygame.image.load(path)
 
-#Creating the sounds
-eat1 = pygame.mixer.Sound('sounds/pac_chomp_one.wav')
-eat2 = pygame.mixer.Sound('sounds/pac_chomp_two.wav')
-music1 = pygame.mixer.Sound('sounds/music1.wav')
-begin = pygame.mixer.Sound('sounds/begin.wav')
+def load_sound(name):
+   path=os.path.join(main_dir,"sounds",name)
+   return pygame.mixer.Sound(path)
 
-#Stage 1 matrix. Holds information on active game state
-#State 0 --> Empty
-#State 1 --> Wall
-#State 2 --> Coin
-#State 3 --> Power
-matriz = Matriz.mat()
+def load_font(name):
+   path=os.path.join(main_dir,"fonts",name)
+   return pygame.font.Font(path,16)
 
-#Directions
-UP    = 0
-RIGHT = 1
-DOWN  = 2
-LEFT  = 3
+def game():
 
-#Tile Size (Define the number of pixels on each tile)
-TS = 8
+    #Initializing modules
+    pygame.init()
+    pygame.mixer.init()
 
-class Player(pygame.sprite.Sprite):
+    #Getting images
+    background = load_img('background.png')
+    power_img = load_img('corn.png')
+    coin_img = load_img('bit.png')
+    patoFC = load_img('patoFC.png')
+    patoFD = load_img('patoFD.png')
+    patoFB = load_img('patoFB.png')
+    patoFE = load_img('patoFE.png')
+    patoAC = load_img('patoAC.png')
+    patoAD = load_img('patoAD.png')
+    patoAB = load_img('patoAB.png')
+    patoAE = load_img('patoAE.png')
 
-    def __init__(self):
-        self.pos = (28*TS,52*TS)
-        self.direct = LEFT
-        self.last_direct = LEFT
-        self.memory_direct = LEFT
-        self.change = 0
-        self.img=0
-        self.imgs = [patoFC,patoFD,patoFB,patoFE,patoAC,patoAD,patoAB,patoAE]
-        self.image = patoFC
-        self.rect = self.image.get_rect()
-        self.aberto=False
+    #Creating the sounds
+    eat1 = load_sound('pac_chomp_one.wav')
+    eat2 = load_sound('pac_chomp_two.wav')
+    music1 = load_sound('music1.wav')
+    begin = load_sound('begin.wav')
 
-    def move(self):
+    #Stage 1 matrix. Holds information on active game state
+    #State 0 --> Empty
+    #State 1 --> Wall
+    #State 2 --> Coin
+    #State 3 --> Power
+    matriz = Matriz.mat()
 
-	#Try (only one time) to do the memory direction
-        if self.change == 1:
-           self.direct = self.memory_direct
+    #Directions
+    UP    = 0
+    RIGHT = 1
+    DOWN  = 2
+    LEFT  = 3
 
-        if self.direct == UP:
-            self.pos = (self.pos[0],self.pos[1]-TS)
-        if self.direct == RIGHT:
-            self.pos = (self.pos[0]+TS,self.pos[1])
-        if self.direct == DOWN:
-            self.pos = (self.pos[0],self.pos[1]+TS)
-        if self.direct == LEFT:
-            self.pos=(self.pos[0]-TS,self.pos[1])
-        
-        if self.pos[1] == 34*TS:
-            if self.pos[0] < 0:
-                self.move_absolute(screen.get_width()-TS,self.pos[1])
-            elif self.pos[0] >= screen.get_width():
-                self.move_absolute(0,self.pos[1])
-        
-        if matriz[self.grid_pos()[0]][self.grid_pos()[1]] == 1:
+    #Tile Size (Define the number of pixels on each tile)
+    TS = 8
+
+    class Player(pygame.sprite.Sprite):
+
+        def __init__(self):
+            self.pos = (28*TS,52*TS)
+            self.direct = LEFT
+            self.last_direct = LEFT
+            self.memory_direct = LEFT
+            self.change = 0
+            self.img=0
+            self.imgs = [patoFC,patoFD,patoFB,patoFE,patoAC,patoAD,patoAB,patoAE]
+            self.image = patoFC
+            self.rect = self.image.get_rect()
+            self.aberto=False
+
+        def move(self):
+
+            #Try (only one time) to do the memory direction
+            if self.change == 1:
+                self.direct = self.memory_direct
+
             if self.direct == UP:
-                self.pos = (self.pos[0], self.pos[1] + TS)
+                self.pos = (self.pos[0],self.pos[1]-TS)
             if self.direct == RIGHT:
-                self.pos = (self.pos[0] - TS, self.pos[1])
+                self.pos = (self.pos[0]+TS,self.pos[1])
             if self.direct == DOWN:
-                self.pos = (self.pos[0], self.pos[1] - TS)
+                self.pos = (self.pos[0],self.pos[1]+TS)
             if self.direct == LEFT:
-                self.pos = (self.pos[0] + TS, self.pos[1])
-                
-            if self.last_direct != self.direct:
+                self.pos=(self.pos[0]-TS,self.pos[1])
 
-                #If direction is invalid, memory_direction save it
-                self.memory_direct = self.direct
-                self.change += 1
+            if self.pos[1] == 34*TS:
+                if self.pos[0] < 0:
+                    self.move_absolute(screen.get_width()-TS,self.pos[1])
+                elif self.pos[0] >= screen.get_width():
+                    self.move_absolute(0,self.pos[1])
 
-                self.direct = self.last_direct
-                self.move()
-        
-        self.last_direct = self.direct
+            if matriz[self.grid_pos()[0]][self.grid_pos()[1]] == 1:
+                if self.direct == UP:
+                    self.pos = (self.pos[0], self.pos[1] + TS)
+                if self.direct == RIGHT:
+                    self.pos = (self.pos[0] - TS, self.pos[1])
+                if self.direct == DOWN:
+                    self.pos = (self.pos[0], self.pos[1] - TS)
+                if self.direct == LEFT:
+                    self.pos = (self.pos[0] + TS, self.pos[1])
 
-    def move_absolute(self,x,y):
-        self.pos=(x,y)
+                if self.last_direct != self.direct:
 
-    def grid_pos(self):
-        return (self.pos[1]//TS,self.pos[0]//TS)
+                    #If direction is invalid, memory_direction save it
+                    self.memory_direct = self.direct
+                    self.change += 1
 
-    def display(self):
-    	if self.aberto:
-    	   self.img+=4
-    	if self.direct==RIGHT:
-    	   self.img+=1
-    	elif self.direct==DOWN:
-    	   self.img+=2
-    	elif self.direct==LEFT:
-    	   self.img+=3
-    	screen.blit(self.imgs[self.img],(self.pos[0]-4,self.pos[1]-8))
-    	self.img=0
-class Score:
+                    self.direct = self.last_direct
+                    self.move()
 
-    def __init__(self):
-        self.font=pygame.font.Font("fonts/emulogic.ttf",16) #loads the font file with letter size equal to 16 pixels
+            self.last_direct = self.direct
 
-        self.score='00' #starting score
-        self.high_score='00' #Starts as last high value if played before, need to implement whan we get there
+        def move_absolute(self,x,y):
+            self.pos=(x,y)
 
-        self.high_score_text=self.font.render(self.high_score,False,pygame.Color("white")) #makes starter high score text 
-        self.score_text=self.font.render(self.score,False,pygame.Color("white")) #makes starter score text
-        
-    def display(self):
-        screen.blit(self.font.render("high score",False,pygame.Color("white")),(144,0)) #display "high score" on screen
-        screen.blit(self.score_text,(112-16*len(self.score),16)) #display current score on screen
-        screen.blit(self.high_score_text,(272-16*len(self.high_score),16)) #display current high score on screen
+        def grid_pos(self):
+            return (self.pos[1]//TS,self.pos[0]//TS)
 
-
-    def add(self,num):
-        self.score=str(int(self.score)+num) #updates current score
-        if int(self.score)>int(self.high_score): #checks if we need new high score
-            self.high_score=self.score #gets new high score value
-            self.high_score_text=self.font.render(self.high_score,False,pygame.Color("white")) #makes new high score text
-        self.score_text=self.font.render(self.score,False,pygame.Color("white")) #makes new score text
-
-class Coins(pygame.sprite.Sprite):
-
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = coin_img
-        self.rect = self.image.get_rect()
-
-
-class Power(pygame.sprite.Sprite):
-
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = power_img
-        self.rect = self.image.get_rect()
-
-player = Player()
-score = Score()
-
-#Create the groups of sprites
-all_sprites_list = pygame.sprite.Group() 
-coins_list = pygame.sprite.Group()
-power_list = pygame.sprite.Group()
-
-#Create the sprites of coins and powers and put them in the respective groups
-for i in range(len(matriz)):
-    for j in range(len(matriz[0])):
-        coins = Coins()
-        power = Power()
-
-        if (matriz[i][j] == 2):
-            coins.rect.x = j * TS
-            coins.rect.y = i * TS
-            coins_list.add(coins)
-            all_sprites_list.add(coins)
-
-        if (matriz[i][j] == 3):
-            power.rect.x = j * TS
-            power.rect.y = i * TS
-            power_list.add(power)
-            all_sprites_list.add(power)
-
-#Screen
-screen = pygame.display.set_mode((TS * 56, TS * 72))
-pygame.display.set_caption("Pato-man")
-
-#Clock Speed
-clock = pygame.time.Clock()
-
-#Inital screen appearence
-screen.fill((0, 0, 0))
-score.display()
-screen.blit(background,(0,6*TS))
-all_sprites_list.draw(screen) #Print the sprites of the group of all sprites
-player.display() #display player
-
-pygame.display.update()
-
-#Plays the beginning sound
-begin.play()
-
-#Waits until sound is over so game can start
-pygame.time.wait(4300)
-music1.play(loops=-1)
-
-#counter to change chomp sound
-counter = True
-
-running = True
-while running:
-    clock.tick(15)
-    for event in pygame.event.get():
-  
-        #Quit game
-        if event.type == pygame.QUIT:
-            running = False
-            pygame.quit()
-
-        #Directions keys
-        if event.type == KEYDOWN:
-            player.change = 0 #If key is used, memory_direction has to update
-            if event.key == K_UP:
-                player.direct = UP
-            if event.key == K_DOWN:
-                player.direct = DOWN
-            if event.key == K_LEFT:
-                player.direct = LEFT
-            if event.key == K_RIGHT:
-                player.direct = RIGHT
-
-    #Handles player movement
-    player.move()
-    player.aberto=not player.aberto
-
-    #If after .move() memory_direction failed or not
-    if player.change == 2:
-        player.change = 1
-    else:
-        player.change = 0
-
-    if matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 2:
-        
-        for coins in coins_list: #Search the atual coins in coins_list
-            if coins.rect.x == player.grid_pos()[1] * TS and coins.rect.y == player.grid_pos()[0] * TS:
-                coins.kill() #Remove from all groups
-                break
-
-        matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
-        score.add(10)
-
-        #change chomp sound
-        if counter:
-            eat1.play()
-        else:
-            eat2.play()
-        counter = not counter
-
-    elif matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 3:
-        
-        for power in power_list: #Search the atual power in power_list
-            if power.rect.x == player.grid_pos()[1] * TS and power.rect.y == player.grid_pos()[0] * TS:
-                power.kill() #Remove from all groups
-                break
-
-        matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
-        score.add(50)
-
-        #change chomp sound
-        if counter:
-            eat1.play()
-        else:
-            eat2.play()
-        counter = not counter
-    if len(power_list)==0 and len(coins_list)==0:
-        running=False
-        pygame.quit()
-
+        def display(self):
+            if self.aberto:
+                self.img+=4
+            if self.direct==RIGHT:
+                self.img+=1
+            elif self.direct==DOWN:
+                self.img+=2
+            elif self.direct==LEFT:
+                self.img+=3
+            screen.blit(self.imgs[self.img],(self.pos[0]-4,self.pos[1]-8))
+            self.img=0
     
-    #Display objects on screen
+    class Score:
+
+        def __init__(self):
+            self.font=load_font("emulogic.ttf") #loads the font file with letter size equal to 16 pixels
+
+            self.score='00' #starting score
+            self.high_score='00' #Starts as last high value if played before, need to implement whan we get there
+
+            self.high_score_text=self.font.render(self.high_score,False,pygame.Color("white")) #makes starter high score text 
+            self.score_text=self.font.render(self.score,False,pygame.Color("white")) #makes starter score text
+
+        def display(self):
+            screen.blit(self.font.render("high score",False,pygame.Color("white")),(144,0)) #display "high score" on screen
+            screen.blit(self.score_text,(112-16*len(self.score),16)) #display current score on screen
+            screen.blit(self.high_score_text,(272-16*len(self.high_score),16)) #display current high score on screen
+
+
+        def add(self,num):
+            self.score=str(int(self.score)+num) #updates current score
+            if int(self.score)>int(self.high_score): #checks if we need new high score
+                self.high_score=self.score #gets new high score value
+                self.high_score_text=self.font.render(self.high_score,False,pygame.Color("white")) #makes new high score text
+            self.score_text=self.font.render(self.score,False,pygame.Color("white")) #makes new score text
+
+    class Coins(pygame.sprite.Sprite):
+
+        def __init__(self):
+            pygame.sprite.Sprite.__init__(self)
+            self.image = coin_img
+            self.rect = self.image.get_rect()
+
+
+    class Power(pygame.sprite.Sprite):
+
+        def __init__(self):
+            pygame.sprite.Sprite.__init__(self)
+            self.image = power_img
+            self.rect = self.image.get_rect()
+
+    player = Player()
+    score = Score()
+
+    #Create the groups of sprites
+    all_sprites_list = pygame.sprite.Group() 
+    coins_list = pygame.sprite.Group()
+    power_list = pygame.sprite.Group()
+
+    #Create the sprites of coins and powers and put them in the respective groups
+    for i in range(len(matriz)):
+        for j in range(len(matriz[0])):
+            coins = Coins()
+            power = Power()
+
+            if (matriz[i][j] == 2):
+                coins.rect.x = j * TS
+                coins.rect.y = i * TS
+                coins_list.add(coins)
+                all_sprites_list.add(coins)
+
+            if (matriz[i][j] == 3):
+                power.rect.x = j * TS
+                power.rect.y = i * TS
+                power_list.add(power)
+                all_sprites_list.add(power)
+
+    #Screen
+    screen = pygame.display.set_mode((TS * 56, TS * 72))
+    pygame.display.set_caption("Pato-man")
+
+    #Clock Speed
+    clock = pygame.time.Clock()
+
+    #Inital screen appearence
     screen.fill((0, 0, 0))
     score.display()
-    screen.blit(background,(0, 6*TS))
-    player.display()  
-
-    #Display coins and powers on screen
-    all_sprites_list.draw(screen)
+    screen.blit(background,(0,6*TS))
+    all_sprites_list.draw(screen) #Print the sprites of the group of all sprites
+    player.display() #display player
 
     pygame.display.update()
+
+    #Plays the beginning sound
+    begin.play()
+
+    #Waits until sound is over so game can start
+    pygame.time.wait(4300)
+    music1.play(loops=-1)
+
+    #counter to change chomp sound
+    counter = True
+
+    running = True
+    while running:
+        clock.tick(15)
+        for event in pygame.event.get():
+
+            #Quit game
+            if event.type == pygame.QUIT:
+                running = False
+                pygame.quit()
+
+            #Directions keys
+            if event.type == KEYDOWN:
+                player.change = 0 #If key is used, memory_direction has to update
+                if event.key == K_UP:
+                    player.direct = UP
+                if event.key == K_DOWN:
+                    player.direct = DOWN
+                if event.key == K_LEFT:
+                    player.direct = LEFT
+                if event.key == K_RIGHT:
+                    player.direct = RIGHT
+
+        #Handles player movement
+        player.move()
+        player.aberto=not player.aberto
+
+        #If after .move() memory_direction failed or not
+        if player.change == 2:
+            player.change = 1
+        else:
+            player.change = 0
+
+        if matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 2:
+
+            for coins in coins_list: #Search the atual coins in coins_list
+                if coins.rect.x == player.grid_pos()[1] * TS and coins.rect.y == player.grid_pos()[0] * TS:
+                    coins.kill() #Remove from all groups
+                    break
+
+            matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
+            score.add(10)
+
+            #change chomp sound
+            if counter:
+                eat1.play()
+            else:
+                eat2.play()
+            counter = not counter
+
+        elif matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 3:
+
+            for power in power_list: #Search the atual power in power_list
+                if power.rect.x == player.grid_pos()[1] * TS and power.rect.y == player.grid_pos()[0] * TS:
+                    power.kill() #Remove from all groups
+                    break
+
+            matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
+            score.add(50)
+
+            #change chomp sound
+            if counter:
+                eat1.play()
+            else:
+                eat2.play()
+            counter = not counter
+        if len(power_list)==0 and len(coins_list)==0:
+            running=False
+            pygame.quit()
+
+
+        #Display objects on screen
+        screen.fill((0, 0, 0))
+        score.display()
+        screen.blit(background,(0, 6*TS))
+        player.display()  
+
+        #Display coins and powers on screen
+        all_sprites_list.draw(screen)
+
+        pygame.display.update()
+
+if __name__=='__main__':
+    game()

@@ -1,0 +1,3 @@
+include Patoman/imgs/*.png
+include Patoman/sounds/*.wav
+include Patoman/fonts/*.ttf
