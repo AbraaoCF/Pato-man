@@ -1,3 +1,3 @@
 # Pato-man
 
-Repositório do projeto de p1 com um PyGame inspirado em Pac-Man
+Play your favorite arcade game, but as a duck!
