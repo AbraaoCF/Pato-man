@@ -2,3 +2,4 @@ dist/
 build/
 *.egg-info
 __py-cache__/
+Patoman/__py-cache__
