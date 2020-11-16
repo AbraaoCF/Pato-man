@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="Pato-man", # Replace with your own username
-    version="0.4.3",
+    name="Pato-man",
+    version="0.4.3.1",
     author="Abraão Caiana de Freitas",
     author_email="abraao.freitas@ccc.ufcg.edu.br",
     description="Pac-man with ducks",
