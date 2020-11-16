@@ -12,7 +12,9 @@ def load_img(name):
 
 def load_sound(name):
    path=os.path.join(main_dir,"sounds",name)
-   return pygame.mixer.Sound(path)
+   this_sound = pygame.mixer.Sound(path)
+   this_sound.set_volume(0.3)
+   return this_sound
 
 def load_font(name):
    path=os.path.join(main_dir,"fonts",name)
@@ -41,8 +43,12 @@ def game():
     eat1 = load_sound('pac_chomp_one.wav')
     eat2 = load_sound('pac_chomp_two.wav')
     music1 = load_sound('music1.wav')
+    music2 = load_sound('music2.wav')
+    music3 = load_sound('music3.wav')
+    music4 = load_sound('music4.wav')
+    power = load_sound('power.wav')
     begin = load_sound('begin.wav')
-
+    
     #Stage 1 matrix. Holds information on active game state
     #State 0 --> Empty
     #State 1 --> Wall
@@ -171,7 +177,24 @@ def game():
             pygame.sprite.Sprite.__init__(self)
             self.image = power_img
             self.rect = self.image.get_rect()
+            
+    def pause_game():
+      running=False
+      pygame.mixer.pause()
+      while not running:
 
+         clock.tick(15)
+         for event in pygame.event.get():
+            #Quit game
+            if event.type == pygame.QUIT:
+             pygame.quit()
+
+            #Directions keys
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                   running=True
+                   pygame.mixer.unpause()
+           
     player = Player()
     score = Score()
 
@@ -201,7 +224,6 @@ def game():
     #Screen
     screen = pygame.display.set_mode((TS * 56, TS * 72))
     pygame.display.set_caption("Pato-man")
-
     #Clock Speed
     clock = pygame.time.Clock()
 
@@ -256,6 +278,8 @@ def game():
                     player.direct = LEFT
                 if event.key == K_RIGHT:
                     player.direct = RIGHT
+                if event.key == K_ESCAPE:
+                   pause_game()
 
         #Handles player movement
         player.move()
@@ -300,6 +324,17 @@ def game():
             else:
                 eat2.play()
             counter = not counter
+
+        if len(power_list)+len(coins_list)==184 and music2.get_num_channels()==0:
+           music1.stop()
+           music2.play(loops=-1)
+        if len(power_list)+len(coins_list)==123 and music3.get_num_channels()==0:
+           music2.stop()
+           music3.play(loops=-1)
+        if len(power_list)+len(coins_list)==61 and music4.get_num_channels()==0:
+           music3.stop()
+           music4.play(loops=-1)
+        
         if len(power_list)==0 and len(coins_list)==0:
             running=False
             pygame.quit()
