@@ -62,7 +62,7 @@ def game():
     class Player(pygame.sprite.Sprite):
 
         def __init__(self):
-            self.pos = (28*TS,52*TS)
+            self.pos = (27*TS,52*TS)
             self.direct = LEFT
             self.last_direct = LEFT
             self.memory_direct = LEFT
@@ -210,15 +210,26 @@ def game():
     score.display()
     screen.blit(background,(0,6*TS))
     all_sprites_list.draw(screen) #Print the sprites of the group of all sprites
-    player.display() #display player
-
+    
+    screen.blit(score.font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
+    screen.blit(score.font.render("player one",False,pygame.Color("cyan")),(TS*18,TS*28))
+    
     pygame.display.update()
 
     #Plays the beginning sound
     begin.play()
 
+    pygame.time.wait(2150)
+    screen.blit(background,(0,6*TS))
+    all_sprites_list.draw(screen) #Print the sprites of the group of all sprites
+    
+    screen.blit(score.font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
+  
+    player.display() #display player
+       
+    pygame.display.update()
     #Waits until sound is over so game can start
-    pygame.time.wait(4300)
+    pygame.time.wait(2150)
     music1.play(loops=-1)
 
     #counter to change chomp sound
