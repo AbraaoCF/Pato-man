@@ -5,6 +5,8 @@ from pygame.locals import *
 from Patoman import main as level1
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
+
+game_volume=50
 def load_img(name):
    path=os.path.join(main_dir,"imgs",name)
    return pygame.image.load(path)
@@ -47,7 +49,6 @@ def run():
 
    font=load_font("emulogic.ttf",16)
    font_menu=load_font("emulogic.ttf",32)
-   game_volume=50
    TS=8 #setting the size in pixels of a tile
 
    screen = pygame.display.set_mode((TS * 56, TS * 72)) #sets screen size
