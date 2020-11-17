@@ -10,17 +10,17 @@ def load_img(name):
    path=os.path.join(main_dir,"imgs",name)
    return pygame.image.load(path)
 
-def load_sound(name):
+def load_sound(name,volume):
    path=os.path.join(main_dir,"sounds",name)
    this_sound = pygame.mixer.Sound(path)
-   this_sound.set_volume(0.3)
+   this_sound.set_volume(volume)
    return this_sound
 
 def load_font(name):
    path=os.path.join(main_dir,"fonts",name)
    return pygame.font.Font(path,16)
 
-def game():
+def game(volume,game_speed,diff):
 
     #Initializing modules
     pygame.init()
@@ -40,14 +40,14 @@ def game():
     patoAE = load_img('patoAE.png')
 
     #Creating the sounds
-    eat1 = load_sound('pac_chomp_one.wav')
-    eat2 = load_sound('pac_chomp_two.wav')
-    music1 = load_sound('music1.wav')
-    music2 = load_sound('music2.wav')
-    music3 = load_sound('music3.wav')
-    music4 = load_sound('music4.wav')
-    power = load_sound('power.wav')
-    begin = load_sound('begin.wav')
+    eat1 = load_sound('pac_chomp_one.wav',volume)
+    eat2 = load_sound('pac_chomp_two.wav',volume)
+    music1 = load_sound('music1.wav',volume)
+    music2 = load_sound('music2.wav',volume)
+    music3 = load_sound('music3.wav',volume)
+    music4 = load_sound('music4.wav',volume)
+    power = load_sound('power.wav',volume)
+    begin = load_sound('begin.wav',volume)
     
     #Stage 1 matrix. Holds information on active game state
     #State 0 --> Empty
@@ -73,7 +73,7 @@ def game():
             self.last_direct = LEFT
             self.memory_direct = LEFT
             self.change = 0
-            self.img=0
+            self.img_index=0
             self.imgs = [patoFC,patoFD,patoFB,patoFE,patoAC,patoAD,patoAB,patoAE]
             self.image = patoFC
             self.rect = self.image.get_rect()
@@ -129,15 +129,15 @@ def game():
 
         def display(self):
             if self.aberto:
-                self.img+=4
+                self.img_index+=4
             if self.direct==RIGHT:
-                self.img+=1
+                self.img_index+=1
             elif self.direct==DOWN:
-                self.img+=2
+                self.img_index+=2
             elif self.direct==LEFT:
-                self.img+=3
-            screen.blit(self.imgs[self.img],(self.pos[0]-4,self.pos[1]-8))
-            self.img=0
+                self.img_index+=3
+            screen.blit(self.imgs[self.img_index],(self.pos[0]-4,self.pos[1]-8))
+            self.img_index=0
     
     class Score:
 
@@ -183,7 +183,7 @@ def game():
       pygame.mixer.pause()
       while not running:
 
-         clock.tick(15)
+         clock.tick(game_speed)
          for event in pygame.event.get():
             #Quit game
             if event.type == pygame.QUIT:
@@ -259,7 +259,7 @@ def game():
 
     running = True
     while running:
-        clock.tick(15)
+        clock.tick(game_speed)
         for event in pygame.event.get():
 
             #Quit game
@@ -352,4 +352,4 @@ def game():
         pygame.display.update()
 
 if __name__=='__main__':
-    game()
+    game(volume=0.5,game_speed=15,diff="easy")
