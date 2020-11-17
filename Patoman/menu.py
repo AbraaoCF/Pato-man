@@ -69,7 +69,8 @@ class Header():
 class Main_Menu():
 
     def __init__(self):
-        pass
+        self.size = 3
+        self.type = "Main Menu"
 
     def display(self):
         screen.blit(font_menu.render("Start", False, pygame.Color('White')),(82,288))
@@ -77,43 +78,70 @@ class Main_Menu():
         screen.blit(font_menu.render("Credits", False, pygame.Color('White')),(82,358))
         screen.blit(font_menu.render("Quit", False, pygame.Color('White')),(82,394))
 
+class Start_Menu():
+
+    def __init__(self):
+        self.size = 2
+        self.type = "Start Menu"
+
+    def display(self):
+        screen.blit(font_menu.render("Normal Mode", False, pygame.Color('White')),(82,288))
+        screen.blit(font_menu.render("Gamer Mode", False, pygame.Color('White')),(82,322))
+        screen.blit(font_menu.render("Return", False, pygame.Color('White')),(82,358))
+
+class Settings_Menu():
+
+    def __init__(self):
+        self.size = 2
+        self.type = "Settings Menu"
+
+    def display(self):
+        screen.blit(font_menu.render("Volume", False, pygame.Color('White')),(82,288))
+        screen.blit(font_menu.render("Return", False, pygame.Color('White')),(82,322))
+
+class Credits_Menu(): #issue
+
+    def __init__(self):
+        self.size = 4
+        self.type = "Credits Menu"
+
+    def display(self):
+        screen.blit(font.render("Abraao Caiana de Freitas", False, pygame.Color('White')),(25,288))
+        screen.blit(font.render("Augusto Nunes Zacarias", False, pygame.Color('White')),(25,316))
+        screen.blit(font.render("Davi Henrique Silva Guimaraes", False, pygame.Color('White')),(25,344))
+        screen.blit(font.render("Joao Gabriel Abrante Uchoa", False, pygame.Color('White')),(25,372))
+        screen.blit(font.render("Return", False, pygame.Color('White')),(82,430))
+
 class Cursor():
     
     def __init__(self):
         self.arrow = load_img('right_arrow.png')
-        self.start = (62,296) #Cursor pointing to 'start' 
-        self.settings = (62,330) #Cursor pointing to 'settings'
-        self.credits = (62,366) #Cursor pointing to 'credits'
-        self.quit = (62,402) #Cursor pointing to 'quit'
-        self.pos = self.start
+        self.positions = [(62,296),(62,330),(62,366),(62,402),(62,430)]
+        self.index = 0
         self.direction = STOP
+        self.size_menu = 3
 
     def move(self):
         if self.direction == STOP or self.direction == RIGHT or self.direction == LEFT:
             pass
-        elif self.direction == UP:
-            if self.pos == self.start:
-                self.pos = self.quit
-            elif self.pos == self.settings:
-                self.pos = self.start
-            elif self.pos == self.credits:
-                self.pos = self.settings
-            elif self.pos == self.quit:
-                self.pos = self.credits
-        elif self.direction == DOWN:
-            if self.pos == self.quit:
-                self.pos = self.start
-            elif self.pos == self.start:
-                self.pos = self.settings
-            elif self.pos == self.settings:
-                self.pos = self.credits
-            elif self.pos == self.credits:
-                self.pos = self.quit
+        if self.direction == DOWN:
+            if self.index == self.size_menu:
+                self.index = 0
+            else:
+                self.index += 1
+        if self.direction == UP:
+            if self.index == 0:
+                self.index = self.size_menu
+            else:
+                self.index -= 1
+
         self.direction = STOP
+    def pos(self):
+        return self.positions[self.index]
 
     def display(self):
-        screen.blit(self.arrow,self.pos)
-
+        screen.blit(self.arrow,self.pos())
+    
 class Animation():
 
     def __init__(self):
@@ -146,6 +174,11 @@ animation=Animation()
 menu=Main_Menu()
 cursor=Cursor()
 
+main_menu = True
+start_menu = False
+settings_menu = False
+credits_menu = False
+
 while True:
     clock.tick(15)
 
@@ -164,11 +197,49 @@ while True:
                     cursor.direction = LEFT
                 if event.key == K_RIGHT:
                     cursor.direction = RIGHT
-             
+                
+                if event.key == K_RETURN:
+                    if menu.type == "Main Menu":
+                        if cursor.pos() == cursor.positions[0]:
+                            menu = Start_Menu()
+                        elif cursor.pos() == cursor.positions[1]:
+                            menu = Settings_Menu()
+                        elif cursor.pos() == cursor.positions[2]:
+                            menu = Credits_Menu()
+                        elif cursor.pos() == cursor.positions[3]:
+                            pygame.quit()
+                        cursor.index = 0 #initialize cursor on the top of new menu
+
+                    elif menu.type == "Start Menu":
+                        if cursor.pos() == cursor.positions[0]:   #issue
+                            pass
+                        elif cursor.pos() == cursor.positions[1]: #issue
+                            pass
+                        elif cursor.pos() == cursor.positions[2]: #return buttom
+                            menu = Main_Menu()
+                        cursor.index = 0 #reinitialize cursor in the main menu on the right position
+
+                    elif menu.type == "Settings Menu":
+                        if cursor.pos() == cursor.positions[0]: #issue
+                            pass
+                        if cursor.pos() == cursor.positions[1]: #return buttom
+                            menu = Main_Menu()
+                        cursor.index = 1 #reinitialize cursor in the main menu on the right position
+
+                    elif menu.type == "Credits Menu":
+                        if cursor.pos() == cursor.positions[4]: #return buttom
+                            menu = Main_Menu()
+                        cursor.index = 2 #reinitialize cursor in the main menu on the right position
+
     screen.fill((0, 0, 0)) #Display objects on screen
     header.display() #Displays header
-    menu.display() #Displays menu
     animation.animate() #Shows duck animation
-    cursor.move()#Moves cursor
-    cursor.display()#Displays cursor
+    cursor.move() #Moves cursor
+    if menu.type == "Credits Menu":
+        cursor.index = 4 #Show cursor only on on return buttom
+    
+    cursor.display() #Displays cursor
+
+    if main_menu == True:
+        menu.display() #Displays menu
     pygame.display.update()
