@@ -46,7 +46,8 @@ def run():
    patoAD = load_img('patoAD.png')
    patoAB = load_img('patoAB.png')
    patoAE = load_img('patoAE.png')
-
+   arrow = load_img('arrow.png')
+   
    font=load_font("emulogic.ttf",16)
    font_menu=load_font("emulogic.ttf",32)
    TS=8 #setting the size in pixels of a tile
@@ -128,7 +129,7 @@ def run():
    class Cursor():
        
        def __init__(self):
-           self.arrow = load_img('arrow.png')
+           self.image = arrow
            self.index = 0
            self.direction = STOP
            self.size_menu = 3
@@ -161,7 +162,7 @@ def run():
            return menu.positions[self.index]
 
        def display(self):
-           screen.blit(self.arrow,self.pos())
+           screen.blit(self.image,self.pos())
        
    class Animation():
 
