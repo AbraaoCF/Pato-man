@@ -1,6 +1,7 @@
 import pygame
 import os
 from pygame.locals import *
+import shelve
 
 from Patoman import Matriz
 from Patoman import menu
@@ -22,7 +23,6 @@ def load_font(name,size):
    return pygame.font.Font(path,size)
 
 def game(volume,game_speed,diff):
-
     #Initializing modules
     pygame.init()
     if not pygame.mixer.get_init():
@@ -149,8 +149,13 @@ def game(volume,game_speed,diff):
         def __init__(self):
             
             self.score='00' #starting score
-            self.high_score='00' #Starts as last high value if played before, need to implement whan we get there
+            d = shelve.open('score.txt')#open high score memory
+            if diff == 'easy':
+                self.high_score=d['score'] #Starts as last high value if played before (modo normal)
+            elif diff == 'hard':
+                self.high_score=d['score_gamer'] #Starts as last high value if played before (modo gamer)
 
+            d.close() #close high score memory
             self.high_score_text=font.render(self.high_score,False,pygame.Color("white")) #makes starter high score text 
             self.score_text=font.render(self.score,False,pygame.Color("white")) #makes starter score text
 
@@ -163,6 +168,13 @@ def game(volume,game_speed,diff):
         def add(self,num):
             self.score=str(int(self.score)+num) #updates current score
             if int(self.score)>int(self.high_score): #checks if we need new high score
+                d = shelve.open('score.txt') #open high score memory
+                if diff == 'easy':
+                    d['score'] = self.score #update high score memory (modo normal)
+                if diff == 'hard':
+                    d['score_gamer'] = self.score #update high score memory (modo gamer)
+
+                d.close() #close high score memory
                 self.high_score=self.score #gets new high score value
                 self.high_score_text=font.render(self.high_score,False,pygame.Color("white")) #makes new high score text
             self.score_text=font.render(self.score,False,pygame.Color("white")) #makes new score text
