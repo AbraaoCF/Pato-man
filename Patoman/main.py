@@ -25,7 +25,8 @@ def game(volume,game_speed,diff):
 
     #Initializing modules
     pygame.init()
-    pygame.mixer.init()
+    if not pygame.mixer.get_init():
+        pygame.mixer.init()
 
     #Loading images
     background = load_img('background.png')
@@ -207,7 +208,8 @@ def game(volume,game_speed,diff):
                       running=True
                       pygame.mixer.unpause()
                    else:
-                      pygame.mixer.stop()
+                      menu.game_volume = int(volume*200)
+                      pygame.mixer.pause()
                       menu.run()
                 if event.key == K_UP:
                    cursor_index+=1
