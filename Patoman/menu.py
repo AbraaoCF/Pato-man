@@ -24,7 +24,8 @@ def load_font(name,size):
 def run():
    
    pygame.init() #initializing pygame
-   pygame.mixer.init()
+   if not pygame.mixer.get_init():
+       pygame.mixer.init()
 
    # Limitations (inclusive) for menu options:
    #top: TS*32 bottom: TS*66
@@ -137,7 +138,8 @@ def run():
        def move(self):
            global game_volume
            self.size_menu=menu.size
-
+           if pygame.mixer.get_init():
+               pygame.mixer.stop()
            if self.direction == RIGHT:
               if menu.type=="Settings Menu" and self.pos()==menu.positions[0]:
                  if game_volume<100:
