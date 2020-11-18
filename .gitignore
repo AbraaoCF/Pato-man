@@ -1,5 +1,5 @@
 dist/
 build/
 *.egg-info
-__py-cache__/
-Patoman/__py-cache__
+__pycache__/
+Patoman/__pycache__
