@@ -373,7 +373,8 @@ def game(volume,game_speed,diff):
         
         if len(power_list)==0 and len(coins_list)==0:
             running=False
-            pygame.quit()
+            pygame.mixer.stop()
+            menu.run()
 
 
         #Display objects on screen
