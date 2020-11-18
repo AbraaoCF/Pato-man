@@ -3,6 +3,7 @@ import os
 from pygame.locals import *
 
 from Patoman import Matriz
+from Patoman import menu
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
@@ -16,9 +17,9 @@ def load_sound(name,volume):
    this_sound.set_volume(volume)
    return this_sound
 
-def load_font(name):
+def load_font(name,size):
    path=os.path.join(main_dir,"fonts",name)
-   return pygame.font.Font(path,16)
+   return pygame.font.Font(path,size)
 
 def game(volume,game_speed,diff):
 
@@ -26,7 +27,7 @@ def game(volume,game_speed,diff):
     pygame.init()
     pygame.mixer.init()
 
-    #Getting images
+    #Loading images
     background = load_img('background.png')
     power_img = load_img('corn.png')
     coin_img = load_img('bit.png')
@@ -38,8 +39,9 @@ def game(volume,game_speed,diff):
     patoAD = load_img('patoAD.png')
     patoAB = load_img('patoAB.png')
     patoAE = load_img('patoAE.png')
+    arrow = load_img('arrow.png')
 
-    #Creating the sounds
+    #Loading the sounds
     eat1 = load_sound('pac_chomp_one.wav',volume)
     eat2 = load_sound('pac_chomp_two.wav',volume)
     music1 = load_sound('music1.wav',volume)
@@ -48,7 +50,9 @@ def game(volume,game_speed,diff):
     music4 = load_sound('music4.wav',volume)
     power = load_sound('power.wav',volume)
     begin = load_sound('begin.wav',volume)
-    
+
+    font=load_font("emulogic.ttf",16) #loads the font file with letter size equal to 16 pixels
+    big_font=load_font("emulogic.ttf",32)
     #Stage 1 matrix. Holds information on active game state
     #State 0 --> Empty
     #State 1 --> Wall
@@ -142,16 +146,15 @@ def game(volume,game_speed,diff):
     class Score:
 
         def __init__(self):
-            self.font=load_font("emulogic.ttf") #loads the font file with letter size equal to 16 pixels
-
+            
             self.score='00' #starting score
             self.high_score='00' #Starts as last high value if played before, need to implement whan we get there
 
-            self.high_score_text=self.font.render(self.high_score,False,pygame.Color("white")) #makes starter high score text 
-            self.score_text=self.font.render(self.score,False,pygame.Color("white")) #makes starter score text
+            self.high_score_text=font.render(self.high_score,False,pygame.Color("white")) #makes starter high score text 
+            self.score_text=font.render(self.score,False,pygame.Color("white")) #makes starter score text
 
         def display(self):
-            screen.blit(self.font.render("high score",False,pygame.Color("white")),(144,0)) #display "high score" on screen
+            screen.blit(font.render("high score",False,pygame.Color("white")),(144,0)) #display "high score" on screen
             screen.blit(self.score_text,(112-16*len(self.score),16)) #display current score on screen
             screen.blit(self.high_score_text,(272-16*len(self.high_score),16)) #display current high score on screen
 
@@ -160,8 +163,8 @@ def game(volume,game_speed,diff):
             self.score=str(int(self.score)+num) #updates current score
             if int(self.score)>int(self.high_score): #checks if we need new high score
                 self.high_score=self.score #gets new high score value
-                self.high_score_text=self.font.render(self.high_score,False,pygame.Color("white")) #makes new high score text
-            self.score_text=self.font.render(self.score,False,pygame.Color("white")) #makes new score text
+                self.high_score_text=font.render(self.high_score,False,pygame.Color("white")) #makes new high score text
+            self.score_text=font.render(self.score,False,pygame.Color("white")) #makes new score text
 
     class Coins(pygame.sprite.Sprite):
 
@@ -180,10 +183,14 @@ def game(volume,game_speed,diff):
             
     def pause_game():
       running=False
+      cursor_index=0
       pygame.mixer.pause()
+      pause_screen=pygame.Surface((TS*56,TS*72))
+      pause_screen.set_alpha(100)
+      positions=[(TS*9,TS*28+4),(TS*1,TS*34+4)]
       while not running:
 
-         clock.tick(game_speed)
+         clock.tick(60)
          for event in pygame.event.get():
             #Quit game
             if event.type == pygame.QUIT:
@@ -194,7 +201,36 @@ def game(volume,game_speed,diff):
                 if event.key == K_ESCAPE:
                    running=True
                    pygame.mixer.unpause()
-           
+
+                if event.key == K_RETURN:
+                   if cursor_index==0:
+                      running=True
+                      pygame.mixer.unpause()
+                   else:
+                      pygame.mixer.stop()
+                      menu.run()
+                if event.key == K_UP:
+                   cursor_index+=1
+                   if cursor_index==2:
+                      cursor_index=0
+                   
+                if event.key == K_DOWN:
+                   cursor_index-=1
+                   if cursor_index==-1:
+                      cursor_index=1
+
+         screen.fill((0, 0, 0))
+         score.display()
+         screen.blit(background,(0, 6*TS))
+         player.display()  
+         #Display coins and powers on screen
+         all_sprites_list.draw(screen)
+         screen.blit(pause_screen,(0,0))
+         screen.blit(big_font.render("PAUSED",False,pygame.Color("White")),(TS*16,TS*16))
+         screen.blit(big_font.render("continue", False, pygame.Color('White')),(TS*12,TS*28))
+         screen.blit(big_font.render("back to menu", False, pygame.Color('White')),(TS*4,TS*34))
+         screen.blit(arrow,positions[cursor_index])
+         pygame.display.update()
     player = Player()
     score = Score()
 
@@ -233,8 +269,8 @@ def game(volume,game_speed,diff):
     screen.blit(background,(0,6*TS))
     all_sprites_list.draw(screen) #Print the sprites of the group of all sprites
     
-    screen.blit(score.font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
-    screen.blit(score.font.render("player one",False,pygame.Color("cyan")),(TS*18,TS*28))
+    screen.blit(font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
+    screen.blit(font.render("player one",False,pygame.Color("cyan")),(TS*18,TS*28))
     
     pygame.display.update()
 
@@ -245,7 +281,7 @@ def game(volume,game_speed,diff):
     screen.blit(background,(0,6*TS))
     all_sprites_list.draw(screen) #Print the sprites of the group of all sprites
     
-    screen.blit(score.font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
+    screen.blit(font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
   
     player.display() #display player
        
@@ -325,13 +361,13 @@ def game(volume,game_speed,diff):
                 eat2.play()
             counter = not counter
 
-        if len(power_list)+len(coins_list)==184 and music2.get_num_channels()==0:
+        if len(power_list)+len(coins_list)==144 and music2.get_num_channels()==0:
            music1.stop()
            music2.play(loops=-1)
-        if len(power_list)+len(coins_list)==123 and music3.get_num_channels()==0:
+        if len(power_list)+len(coins_list)==83 and music3.get_num_channels()==0:
            music2.stop()
            music3.play(loops=-1)
-        if len(power_list)+len(coins_list)==61 and music4.get_num_channels()==0:
+        if len(power_list)+len(coins_list)==27 and music4.get_num_channels()==0:
            music3.stop()
            music4.play(loops=-1)
         
