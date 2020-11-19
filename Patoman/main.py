@@ -390,6 +390,8 @@ def game(volume,game_speed,diff):
     #counter to change chomp sound
     counter = True
     
+    Ajuste = 6
+    
     running = True
     while running:
         clock.tick(game_speed)
@@ -462,8 +464,6 @@ def game(volume,game_speed,diff):
             if(phantom[Blinky].mode != EATEN and phantom[Blinky].mode != LEAVE):
                 if(phantom[Blinky].mode != FRIGHTENED):
                     phantom[Blinky].change_direct()
-                
-                print("HERE")
                 
                 phantom[Blinky].mode = FRIGHTENED
                 phantom[Blinky].moviments = 0
@@ -549,10 +549,10 @@ def game(volume,game_speed,diff):
         #Display coins and powers on screen
         all_sprites_list.draw(screen)
         
-        screen.blit(phantom[Blinky].img, (phantom[Blinky].pos[0], phantom[Blinky].pos[1]))
-        screen.blit(phantom[Inky  ].img, (phantom[Inky  ].pos[0], phantom[Inky  ].pos[1]))
-        screen.blit(phantom[Clyde ].img, (phantom[Clyde ].pos[0], phantom[Clyde ].pos[1]))
-        screen.blit(phantom[Pinky ].img, (phantom[Pinky ].pos[0], phantom[Pinky ].pos[1]))
+        screen.blit(phantom[Blinky].img, (phantom[Blinky].pos[0]-Ajuste, phantom[Blinky].pos[1]-Ajuste))
+        screen.blit(phantom[Inky  ].img, (phantom[Inky  ].pos[0]-Ajuste, phantom[Inky  ].pos[1]-Ajuste))
+        screen.blit(phantom[Clyde ].img, (phantom[Clyde ].pos[0]-Ajuste, phantom[Clyde ].pos[1]-Ajuste))
+        screen.blit(phantom[Pinky ].img, (phantom[Pinky ].pos[0]-Ajuste, phantom[Pinky ].pos[1]-Ajuste))
 
         pygame.display.update()
 

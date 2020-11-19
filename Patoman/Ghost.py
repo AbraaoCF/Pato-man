@@ -75,6 +75,8 @@ Clyde_img.fill((209,239,13))
 Pinky_img = pygame.Surface((16,16))
 Pinky_img.fill((218,15,245))
 
+Ajuste = 6
+
 class Ghost(pygame.sprite.Sprite):
 	
 	def __init__(self, type_ghost):
@@ -82,26 +84,24 @@ class Ghost(pygame.sprite.Sprite):
 		
 		if(self.ghost == Inky):
 			self.pos = (22 * TS, 36 * TS)
-			self.img = Inky_img
 		if(self.ghost == Blinky):
 			self.pos = (27 * TS, 28 * TS)
-			self.img = Blinky_img
 		if(self.ghost == Clyde):
 			self.pos = (32 * TS, 36 * TS)
-			self.img = Clyde_img
 		if(self.ghost == Pinky):
 			self.pos = (27 * TS, 36 * TS)
-			self.img = Pinky_img
 			
 		self.mode = LEAVE
 		if(self.ghost == Blinky): self.mode = SCATTER
 		
 		pygame.sprite.Sprite.__init__(self)
-		self.rect = self.img.get_rect()
-		self.rect.x = self.pos[0]
-		self.rect.y = self.pos[1]
 		self.direct = DOWN
 		self.change = 0
+		self.img = imgs[self.mode][self.ghost][self.direct][self.change]
+		self.rect = self.img.get_rect()
+		self.rect.x = self.pos[0]-Ajuste
+		self.rect.y = self.pos[1]-Ajuste
+		
 		self.box = False
 		
 		self.moviments = 0
@@ -121,14 +121,16 @@ class Ghost(pygame.sprite.Sprite):
 			self.direct = RIGHT
 	
 	def set_image(self):
-		#self.img = imgs[self.mode][self.ghost][self.direct][self.change]
-		#self.rect = imgs[self.mode][self.ghost][self.direct][self.change].get_rect()
-		ok = 1
+		self.img = imgs[self.mode][self.ghost][self.direct][self.change]
+		self.rect = imgs[self.mode][self.ghost][self.direct][self.change].get_rect()
+		self.rect.x = self.pos[0]-Ajuste
+		self.rect.y = self.pos[1]-Ajuste
 	
 	def move(self, x, y, direct, redx, redy, coins_left):
 		possible_moviments = []
 		
 		self.moviments += 1
+		self.change = (self.change + 1) % 2
 		
 		if(self.mode == SCATTER):
 			if(self.ghost == Inky):
@@ -159,8 +161,6 @@ class Ghost(pygame.sprite.Sprite):
 			possible_moviments.sort()
 			
 			self.pos = (possible_moviments[0][3] * TS, possible_moviments[0][2] * TS)
-			self.rect.x = possible_moviments[0][3] * TS
-			self.rect.y = possible_moviments[0][2] * TS
 			self.direct = possible_moviments[0][1]
 			
 			if(self.moviments == 112):
@@ -235,8 +235,6 @@ class Ghost(pygame.sprite.Sprite):
 			possible_moviments.sort()
 			
 			self.pos = (possible_moviments[0][3] * TS, possible_moviments[0][2] * TS)
-			self.rect.x = possible_moviments[0][3] * TS
-			self.rect.y = possible_moviments[0][2] * TS
 			self.direct = possible_moviments[0][1]
 			
 			if(self.target[0] == (self.pos[1] // TS) and self.target[1] == (self.pos[0] // TS)):
@@ -287,8 +285,6 @@ class Ghost(pygame.sprite.Sprite):
 			possible_moviments.sort()
 			
 			self.pos = (possible_moviments[0][3] * TS, possible_moviments[0][2] * TS)
-			self.rect.x = possible_moviments[0][3] * TS
-			self.rect.y = possible_moviments[0][2] * TS
 			self.direct = possible_moviments[0][1]
 			
 			if(self.moviments == 320):
@@ -323,8 +319,6 @@ class Ghost(pygame.sprite.Sprite):
 			possible_moviments.sort()
 			
 			self.pos = (possible_moviments[0][3] * TS, possible_moviments[0][2] * TS)
-			self.rect.x = possible_moviments[0][3] * TS
-			self.rect.y = possible_moviments[0][2] * TS
 			self.direct = possible_moviments[0][1]
 			
 			if(self.target[0] == (self.pos[1] // TS) and self.target[1] == (self.pos[0] // TS)):
