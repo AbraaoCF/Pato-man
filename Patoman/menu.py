@@ -1,8 +1,7 @@
 import pygame
 import os
 from pygame.locals import *
-
-from Patoman import main as level1
+import main as level1
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
@@ -33,9 +32,9 @@ def run():
 
    #Directions
    UP    = 0
-   RIGHT = 1
+   LEFT  = 1
    DOWN  = 2
-   LEFT  = 3
+   RIGHT = 3
    STOP  = 4
 
    #loading resources
@@ -202,7 +201,7 @@ def run():
    start_menu = False
    settings_menu = False
    credits_menu = False
-
+   
    while True:
        clock.tick(15)
 

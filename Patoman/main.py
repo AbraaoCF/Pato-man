@@ -2,8 +2,9 @@ import pygame
 import os
 from pygame.locals import *
 import shelve
-from Patoman import Matriz
-from Patoman import menu
+import Matriz
+import menu
+import Ghost
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
@@ -72,12 +73,27 @@ def game(volume,game_speed,diff):
 
     #Directions
     UP    = 0
-    RIGHT = 1
+    LEFT  = 1
     DOWN  = 2
-    LEFT  = 3
+    RIGHT = 3
 
     #Tile Size (Define the number of pixels on each tile)
     TS = 8
+    
+    #Defining Ghosts
+    Inky = 0
+    Blinky = 1
+    Clyde = 2
+    Pinky = 3
+    
+    #Defining Ghosts' modes
+    SCATTER = 0
+    CHASE = 1
+    EATEN = 2
+    FRIGHTENED = 3
+    LEAVE = 4
+
+    phantom = [Ghost.Ghost(0), Ghost.Ghost(1), Ghost.Ghost(2), Ghost.Ghost(3)]
 
     class Player(pygame.sprite.Sprite):
 
@@ -92,9 +108,17 @@ def game(volume,game_speed,diff):
             self.image = patoFC
             self.rect = self.image.get_rect()
             self.aberto=False
-
+            self.rect.x = self.pos[0]
+            self.rect.y = self.pos[1]
+            self.end_game = False
+            self.eaten_phantom = 0
+        
+        def set_xy(self):
+            self.rect.x = self.pos[0]
+            self.rect.y = self.pos[1]
+        
         def move(self):
-
+            
             #Try (only one time) to do the memory direction
             if self.change == 1:
                 self.direct = self.memory_direct
@@ -114,7 +138,7 @@ def game(volume,game_speed,diff):
                 elif self.pos[0] >= screen.get_width():
                     self.move_absolute(0,self.pos[1])
 
-            if matriz[self.grid_pos()[0]][self.grid_pos()[1]] == 1:
+            if matriz[self.grid_pos()[0]][self.grid_pos()[1]] == 1 or matriz[self.grid_pos()[0]][self.grid_pos()[1]] == 4:
                 if self.direct == UP:
                     self.pos = (self.pos[0], self.pos[1] + TS)
                 if self.direct == RIGHT:
@@ -134,6 +158,7 @@ def game(volume,game_speed,diff):
                     self.move()
 
             self.last_direct = self.direct
+            self.set_xy()
 
         def move_absolute(self,x,y):
             self.pos=(x,y)
@@ -151,7 +176,35 @@ def game(volume,game_speed,diff):
             elif self.direct==LEFT:
                 self.img_index+=3
             screen.blit(self.imgs[self.img_index],(self.pos[0]-4,self.pos[1]-8))
+            self.rect = self.imgs[self.img_index].get_rect()
+            self.set_xy()
             self.img_index=0
+        
+        def collision(self):
+            
+            phantom_list = pygame.sprite.Group()
+            
+            phantom_list.add(phantom[Inky  ])
+            phantom_list.add(phantom[Blinky])
+            phantom_list.add(phantom[Clyde ])
+            phantom_list.add(phantom[Pinky ])
+            
+            phantom_player_collision = pygame.sprite.spritecollide(player, phantom_list, True)
+            
+            for ghost in phantom_player_collision:
+                
+                if(ghost.mode == EATEN):
+                    continue
+                if(ghost.mode == FRIGHTENED):
+                    
+                    phantom[ghost.ghost].mode = EATEN
+                    phantom[ghost.ghost].box = False
+                    self.eaten_phantom += 1
+                    score.add(200 * (2 ** self.eaten_phantom))
+                    
+                    self.eaten_phantom %= 4
+                else:
+                    self.end_game = True
     
     class Score:
 
@@ -315,10 +368,16 @@ def game(volume,game_speed,diff):
 
     #counter to change chomp sound
     counter = True
-
+    
     running = True
     while running:
         clock.tick(game_speed)
+        
+        if(player.end_game):
+            running = False
+            pygame.mixer.stop()
+            menu.run()
+        
         for event in pygame.event.get():
 
             #Quit game
@@ -368,7 +427,29 @@ def game(volume,game_speed,diff):
             counter = not counter
 
         elif matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 3:
-
+            
+            power_on = False
+            
+            if(phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED):
+                power_on = True
+            
+            if(phantom[Blinky].mode != EATEN and phantom[Blinky].mode != LEAVE):
+                phantom[Blinky].mode = FRIGHTENED
+                phantom[Blinky].moviments = 0
+            if(phantom[Inky  ].mode != EATEN and phantom[Inky  ].mode != LEAVE):
+                phantom[Inky  ].mode = FRIGHTENED
+                phantom[Inky  ].moviments = 0
+            if(phantom[Clyde ].mode != EATEN and phantom[Clyde ].mode != LEAVE):
+                phantom[Clyde ].mode = FRIGHTENED
+                phantom[Clyde ].moviments = 0
+            if(phantom[Pinky ].mode != EATEN and phantom[Pinky ].mode != LEAVE):
+                phantom[Pinky ].mode = FRIGHTENED
+                phantom[Pinky ].moviments = 0
+            
+            if(not power_on):
+                player.eaten_phantom = 0
+            
+            
             for power in power_list: #Search the atual power in power_list
                 if power.rect.x == player.grid_pos()[1] * TS and power.rect.y == player.grid_pos()[0] * TS:
                     power.kill() #Remove from all groups
@@ -405,7 +486,21 @@ def game(volume,game_speed,diff):
         score.display()
         screen.blit(background,(0, 6*TS))
         player.display()  
-
+        
+        phantom[Blinky].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
+        phantom[Inky  ].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, phantom[Blinky].pos[1] // TS, phantom[Blinky].pos[0] // TS, len(power_list) + len(coins_list))
+        phantom[Clyde ].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
+        phantom[Pinky ].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
+        
+        player.collision()
+        
+        screen.blit(phantom[Blinky].img, (phantom[Blinky].pos[0], phantom[Blinky].pos[1]))
+        screen.blit(phantom[Inky  ].img, (phantom[Inky  ].pos[0], phantom[Inky  ].pos[1]))
+        screen.blit(phantom[Clyde ].img, (phantom[Clyde ].pos[0], phantom[Clyde ].pos[1]))
+        screen.blit(phantom[Pinky ].img, (phantom[Pinky ].pos[0], phantom[Pinky ].pos[1]))
+        
+        #print(phantom[Inky].pos[1] // TS, phantom[Inky].pos[0] // TS, phantom[Inky].direct, phantom[Inky].mode, phantom[Inky].moviments)
+        
         #Display coins and powers on screen
         all_sprites_list.draw(screen)
 
