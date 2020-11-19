@@ -2,12 +2,21 @@ import pygame
 import os
 from pygame.locals import *
 import shelve
-
 from Patoman import Matriz
 from Patoman import menu
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 shelve_path=os.path.join(main_dir,"score.txt")
+
+path=os.path.join(main_dir,'score.txt') 
+d = shelve.open(path)
+
+#Load high score memory
+if 'score' not in d:
+    d['score'] = '00'
+if 'score_gamer' not in d:
+    d['score_gamer'] = '00'
+d.close()
 
 def load_img(name):
    path=os.path.join(main_dir,"imgs",name)
