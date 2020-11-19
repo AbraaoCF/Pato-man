@@ -7,6 +7,7 @@ from Patoman import Matriz
 from Patoman import menu
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
+shelve_path=os.path.join(main_dir,"score.txt")
 
 def load_img(name):
    path=os.path.join(main_dir,"imgs",name)
@@ -149,10 +150,11 @@ def game(volume,game_speed,diff):
         def __init__(self):
             
             self.score='00' #starting score
-            d = shelve.open('score.txt')#open high score memory
-            if diff == 'easy':
+            d = shelve.open(shelve_path)#open high score memory
+            self.high_score='00'
+            if diff == 'easy' and 'score' in d:
                 self.high_score=d['score'] #Starts as last high value if played before (modo normal)
-            elif diff == 'hard':
+            elif diff == 'hard' and 'score_gamer' in d:
                 self.high_score=d['score_gamer'] #Starts as last high value if played before (modo gamer)
 
             d.close() #close high score memory
@@ -168,7 +170,7 @@ def game(volume,game_speed,diff):
         def add(self,num):
             self.score=str(int(self.score)+num) #updates current score
             if int(self.score)>int(self.high_score): #checks if we need new high score
-                d = shelve.open('score.txt') #open high score memory
+                d = shelve.open(shelve_path) #open high score memory
                 if diff == 'easy':
                     d['score'] = self.score #update high score memory (modo normal)
                 if diff == 'hard':
