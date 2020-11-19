@@ -1,7 +1,13 @@
 import random
+import os
 import pygame
 from pygame.locals import *
-import Matriz
+from Patoman import Matriz
+
+main_dir = os.path.split(os.path.abspath(__file__))[0]
+def load_img(name):
+   path=os.path.join(main_dir,"imgs",name)
+   return pygame.image.load(path)
 
 matriz = Matriz.mat();
 
@@ -9,6 +15,7 @@ UP = 0
 LEFT = 1
 DOWN = 2
 RIGHT = 3
+NONE = 4
 
 Inky = 0
 Blinky = 1
@@ -22,6 +29,39 @@ FRIGHTENED = 3
 LEAVE = 4
 
 TS = 8
+
+imgs =  [
+[
+[[load_img('InkyUp1.png'  ), load_img('InkyUp2.png'  )], [load_img('InkyLeft1.png'  ), load_img('InkyLeft2.png'  )], [load_img('InkyDown1.png'  ), load_img('InkyDown2.png'  )], [load_img('InkyRight1.png'  ), load_img('InkyRight2.png'  )]],
+[[load_img('BlinkyUp1.png'), load_img('BlinkyUp2.png')], [load_img('BlinkyLeft1.png'), load_img('BlinkyLeft2.png')], [load_img('BlinkyDown1.png'), load_img('BlinkyDown2.png')], [load_img('BlinkyRight1.png'), load_img('BlinkyRight2.png')]],
+[[load_img('ClydeUp1.png' ), load_img('ClydeUp2.png' )], [load_img('ClydeLeft1.png' ), load_img('ClydeLeft2.png' )], [load_img('ClydeDown1.png' ), load_img('ClydeDown2.png' )], [load_img('ClydeRight1.png' ), load_img('ClydeRight2.png' )]],
+[[load_img('PinkyUp1.png' ), load_img('PinkyUp2.png' )], [load_img('PinkyLeft1.png' ), load_img('PinkyLeft2.png' )], [load_img('PinkyDown1.png' ), load_img('PinkyDown2.png' )], [load_img('PinkyRight1.png' ), load_img('PinkyRight2.png' )]],
+],
+[
+[[load_img('InkyUp1.png'  ), load_img('InkyUp2.png'  )], [load_img('InkyLeft1.png'  ), load_img('InkyLeft2.png'  )], [load_img('InkyDown1.png'  ), load_img('InkyDown2.png'  )], [load_img('InkyRight1.png'  ), load_img('InkyRight2.png'  )]],
+[[load_img('BlinkyUp1.png'), load_img('BlinkyUp2.png')], [load_img('BlinkyLeft1.png'), load_img('BlinkyLeft2.png')], [load_img('BlinkyDown1.png'), load_img('BlinkyDown2.png')], [load_img('BlinkyRight1.png'), load_img('BlinkyRight2.png')]],
+[[load_img('ClydeUp1.png' ), load_img('ClydeUp2.png' )], [load_img('ClydeLeft1.png' ), load_img('ClydeLeft2.png' )], [load_img('ClydeDown1.png' ), load_img('ClydeDown2.png' )], [load_img('ClydeRight1.png' ), load_img('ClydeRight2.png' )]],
+[[load_img('PinkyUp1.png' ), load_img('PinkyUp2.png' )], [load_img('PinkyLeft1.png' ), load_img('PinkyLeft2.png' )], [load_img('PinkyDown1.png' ), load_img('PinkyDown2.png' )], [load_img('PinkyRight1.png' ), load_img('PinkyRight2.png' )]],
+],
+[
+[[load_img('EatenUp.png'), load_img('EatenUp.png')], [load_img('EatenLeft.png'), load_img('EatenLeft.png')], [load_img('EatenDown.png'), load_img('EatenDown.png')], [load_img('EatenRight.png'), load_img('EatenRight.png')]],
+[[load_img('EatenUp.png'), load_img('EatenUp.png')], [load_img('EatenLeft.png'), load_img('EatenLeft.png')], [load_img('EatenDown.png'), load_img('EatenDown.png')], [load_img('EatenRight.png'), load_img('EatenRight.png')]],
+[[load_img('EatenUp.png'), load_img('EatenUp.png')], [load_img('EatenLeft.png'), load_img('EatenLeft.png')], [load_img('EatenDown.png'), load_img('EatenDown.png')], [load_img('EatenRight.png'), load_img('EatenRight.png')]],
+[[load_img('EatenUp.png'), load_img('EatenUp.png')], [load_img('EatenLeft.png'), load_img('EatenLeft.png')], [load_img('EatenDown.png'), load_img('EatenDown.png')], [load_img('EatenRight.png'), load_img('EatenRight.png')]],
+],
+[
+[[load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')]],
+[[load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')]],
+[[load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')]],
+[[load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')], [load_img('Frightened1.png'), load_img('Frightened2.png')]],
+],
+[
+[[load_img('InkyUp1.png'  ), load_img('InkyUp2.png'  )], [load_img('InkyLeft1.png'  ), load_img('InkyLeft2.png'  )], [load_img('InkyDown1.png'  ), load_img('InkyDown2.png'  )], [load_img('InkyRight1.png'  ), load_img('InkyRight2.png'  )]],
+[[load_img('BlinkyUp1.png'), load_img('BlinkyUp2.png')], [load_img('BlinkyLeft1.png'), load_img('BlinkyLeft2.png')], [load_img('BlinkyDown1.png'), load_img('BlinkyDown2.png')], [load_img('BlinkyRight1.png'), load_img('BlinkyRight2.png')]],
+[[load_img('ClydeUp1.png' ), load_img('ClydeUp2.png' )], [load_img('ClydeLeft1.png' ), load_img('ClydeLeft2.png' )], [load_img('ClydeDown1.png' ), load_img('ClydeDown2.png' )], [load_img('ClydeRight1.png' ), load_img('ClydeRight2.png' )]],
+[[load_img('PinkyUp1.png' ), load_img('PinkyUp2.png' )], [load_img('PinkyLeft1.png' ), load_img('PinkyLeft2.png' )], [load_img('PinkyDown1.png' ), load_img('PinkyDown2.png' )], [load_img('PinkyRight1.png' ), load_img('PinkyRight2.png' )]],
+]
+		]
 
 Blinky_img = pygame.Surface((16,16))
 Blinky_img.fill((255,0,0))
@@ -54,13 +94,14 @@ class Ghost(pygame.sprite.Sprite):
 			self.img = Pinky_img
 			
 		self.mode = LEAVE
+		if(self.ghost == Blinky): self.mode = SCATTER
 		
 		pygame.sprite.Sprite.__init__(self)
 		self.rect = self.img.get_rect()
-		self.rect.x = 6*TS
-		self.rect.y = 8*TS
-		self.direct = LEFT
-		
+		self.rect.x = self.pos[0]
+		self.rect.y = self.pos[1]
+		self.direct = DOWN
+		self.change = 0
 		self.box = False
 		
 		self.moviments = 0
@@ -78,6 +119,11 @@ class Ghost(pygame.sprite.Sprite):
 			self.direct = LEFT
 		elif(self.direct == LEFT):
 			self.direct = RIGHT
+	
+	def set_image(self):
+		#self.img = imgs[self.mode][self.ghost][self.direct][self.change]
+		#self.rect = imgs[self.mode][self.ghost][self.direct][self.change].get_rect()
+		ok = 1
 	
 	def move(self, x, y, direct, redx, redy, coins_left):
 		possible_moviments = []
@@ -205,7 +251,6 @@ class Ghost(pygame.sprite.Sprite):
 		elif(self.mode == CHASE):
 			if(self.ghost == Inky):
 				self.target = (x - (redx - x), y - (redy - y))
-				
 			if(self.ghost == Blinky):
 				self.target = (x, y)
 			if(self.ghost == Clyde):
@@ -291,7 +336,4 @@ class Ghost(pygame.sprite.Sprite):
 				self.change_direct()
 					
 				self.moviments = 0
-		
-	def display(self):
-		screen.blit(self.img,(self.pos[0]-4,self.pos[1]-8))
-		
+		self.set_image()
