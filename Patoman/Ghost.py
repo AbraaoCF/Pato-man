@@ -1,7 +1,7 @@
 import random
 import pygame
 from pygame.locals import *
-import Matriz
+from Patoman import Matriz
 
 matriz = Matriz.mat();
 
