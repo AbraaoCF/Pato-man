@@ -2,10 +2,10 @@ import pygame
 import os
 from pygame.locals import *
 import shelve
-import Matriz
-import menu
-import Ghost
-
+from Patoman import Matriz
+from Patoman import menu
+from Patoman import Ghost
+power_song = False
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 shelve_path=os.path.join(main_dir,"score.txt")
 
@@ -36,6 +36,7 @@ def go_to_menu():
    menu.run()
 
 def game(volume,game_speed,diff):
+    global power_song
     #Initializing modules
     pygame.init()
     if not pygame.mixer.get_init():
@@ -200,7 +201,6 @@ def game(volume,game_speed,diff):
                     phantom[ghost.ghost].mode = EATEN
                     eat_ghost.play()
                     pygame.time.wait(200)
-
                     phantom[ghost.ghost].box = False
                     score.add(200 * (2 ** self.eaten_phantom))
                     self.eaten_phantom += 1
@@ -290,6 +290,7 @@ def game(volume,game_speed,diff):
                       running=True
                       pygame.mixer.music.unpause()
                       pygame.mixer.unpause()
+                      pygame.mixer.music.unpause()
                    else:
                       go_to_menu()
                 if event.key == K_UP:
@@ -313,6 +314,7 @@ def game(volume,game_speed,diff):
          screen.blit(big_font.render("continue", False, pygame.Color('White')),(TS*12,TS*28))
          screen.blit(big_font.render("back to menu", False, pygame.Color('White')),(TS*4,TS*34))
          screen.blit(arrow,positions[cursor_index])
+
          pygame.display.update()
 
     player = Player()
@@ -358,7 +360,6 @@ def game(volume,game_speed,diff):
 
     #Plays the beginning sound
     play_music('begin.wav',volume)
-
     pygame.time.wait(2150)
 
     #initial screen appearence 2
@@ -374,11 +375,9 @@ def game(volume,game_speed,diff):
 
     #Waits until sound is over so game can start
     pygame.time.wait(2150)
-
     play_music('music1.wav',volume)
     level_music = 'music1.wav'
     now_music = 'music1.wav'
-
     #counter to change chomp sound
     counter = True
     
@@ -414,6 +413,7 @@ def game(volume,game_speed,diff):
 
         #changes pato-man's mouth animation
         player.aberto=not player.aberto
+
 
         #If after .move() memory_direction failed or not
         if player.change == 2:
@@ -465,7 +465,9 @@ def game(volume,game_speed,diff):
                     phantom[Pinky ].change_direct()
                 phantom[Pinky ].mode = FRIGHTENED
                 phantom[Pinky ].moviments = 0
-            
+
+            if(phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED):
+                power_on = True
             
             for power in power_list: #Search the atual power in power_list
                 if power.rect.x == player.grid_pos()[1] * TS and power.rect.y == player.grid_pos()[0] * TS:
@@ -481,7 +483,7 @@ def game(volume,game_speed,diff):
             else:
                 eat2.play()
             counter = not counter
-
+            
         #music handler
         #------------------------------------------
         if (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED):
@@ -515,7 +517,6 @@ def game(volume,game_speed,diff):
         if len(power_list)==0 and len(coins_list)==0:
            go_to_menu()
 
-
         #Display objects on screen
         screen.fill((0, 0, 0))
         score.display()
@@ -528,7 +529,7 @@ def game(volume,game_speed,diff):
         phantom[Pinky ].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
         
         player.collision()
-        
+
         #Display coins and powers on screen
         all_sprites_list.draw(screen)
         
