@@ -5,7 +5,6 @@ import shelve
 from Patoman import Matriz
 from Patoman import menu
 from Patoman import Ghost
-
 power_song = False
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 shelve_path=os.path.join(main_dir,"score.txt")
@@ -20,14 +19,21 @@ def load_sound(name,volume):
    this_sound.set_volume(volume)
    return this_sound
 
-def load_music(name,volume):
+def play_music(name,volume):
    path=os.path.join(main_dir,"sounds",name)
    pygame.mixer.music.load(path)
-   pygame.mixer.music.set_volume(volume)   
+   pygame.mixer.music.set_volume(volume)
+   pygame.mixer.music.play(loops=-1)
 
 def load_font(name,size):
    path=os.path.join(main_dir,"fonts",name)
    return pygame.font.Font(path,size)
+
+def go_to_menu():
+   running=False
+   pygame.mixer.music.unload()
+   pygame.mixer.pause()
+   menu.run()
 
 def game(volume,game_speed,diff):
     global power_song
@@ -36,7 +42,7 @@ def game(volume,game_speed,diff):
     if not pygame.mixer.get_init():
         pygame.mixer.init()
 
-    #Loading images
+    #Loads images
     background = load_img('background.png')
     power_img = load_img('corn.png')
     coin_img = load_img('bit.png')
@@ -50,24 +56,16 @@ def game(volume,game_speed,diff):
     patoAE = load_img('patoAE.png')
     arrow = load_img('arrow.png')
 
-    #Loading the sounds
+    #Loads the sounds
     eat1 = load_sound('pac_chomp_one.wav',volume)
     eat2 = load_sound('pac_chomp_two.wav',volume)
-
     death = load_sound('death.wav',volume)
     eat_ghost = load_sound('eat.wav',volume)
 
-    #Loading the musics
-    #load_sound('begin.wav',volume)
-    #load_music('music1.wav',volume)
-    #load_music('music2.wav',volume)
-    #load_music('music3.wav',volume)
-    #load_music('music4.wav',volume)
-    #load_music('power.wav',volume)
-    #load_music('eyes.wav',volume)
-
-    font=load_font("emulogic.ttf",16) #loads the font file with letter size equal to 16 pixels
+    #loads the fonts
+    font=load_font("emulogic.ttf",16) 
     big_font=load_font("emulogic.ttf",32)
+
     #Stage 1 matrix. Holds information on active game state
     #State 0 --> Empty
     #State 1 --> Wall
@@ -114,7 +112,6 @@ def game(volume,game_speed,diff):
             self.aberto=False
             self.rect.x = self.pos[0]
             self.rect.y = self.pos[1]
-            self.end_game = False
             self.eaten_phantom = 0
             
         def set_xy(self):
@@ -197,24 +194,21 @@ def game(volume,game_speed,diff):
             
             for ghost in phantom_player_collision:
                 
-                if(ghost.mode == EATEN):
+                if (ghost.mode == EATEN):
                     continue
-                if(ghost.mode == FRIGHTENED):
+                if (ghost.mode == FRIGHTENED):
                     
                     phantom[ghost.ghost].mode = EATEN
                     eat_ghost.play()
                     pygame.time.wait(200)
-                    pygame.mixer.music.unload()
-                    load_music('eyes.wav',volume)
-                    pygame.mixer.music.play(loops=-1)
-
                     phantom[ghost.ghost].box = False
                     score.add(200 * (2 ** self.eaten_phantom))
                     self.eaten_phantom += 1
                 else:
                     pygame.mixer.music.unload()
                     death.play()
-                    self.end_game = True
+                    pygame.time.wait(2000)
+                    go_to_menu()
     
     class Score:
 
@@ -281,26 +275,24 @@ def game(volume,game_speed,diff):
          for event in pygame.event.get():
             #Quit game
             if event.type == pygame.QUIT:
-             pygame.quit()
+               pygame.quit()
 
             #Directions keys
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                    running=True
+                   pygame.mixer.music.unpause()
                    pygame.mixer.unpause()
 
                 if event.key == K_RETURN:
 
                    if cursor_index==0:
                       running=True
+                      pygame.mixer.music.unpause()
                       pygame.mixer.unpause()
                       pygame.mixer.music.unpause()
                    else:
-                      power_song = False
-                      pygame.mixer.music.unload()
-                      menu.game_volume = int(volume*200)
-                      pygame.mixer.pause()
-                      menu.run()
+                      go_to_menu()
                 if event.key == K_UP:
                    cursor_index+=1
                    if cursor_index==2:
@@ -362,31 +354,30 @@ def game(volume,game_speed,diff):
     score.display()
     screen.blit(background,(0,6*TS))
     all_sprites_list.draw(screen) #Print the sprites of the group of all sprites
-    
     screen.blit(font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
     screen.blit(font.render("player one",False,pygame.Color("cyan")),(TS*18,TS*28))
-    
     pygame.display.update()
 
     #Plays the beginning sound
-    load_music('begin.wav',volume)
-    pygame.mixer.music.play()
-
+    play_music('begin.wav',volume)
     pygame.time.wait(2150)
+
+    #initial screen appearence 2
     screen.blit(background,(0,6*TS))
     all_sprites_list.draw(screen) #Print the sprites of the group of all sprites
-    
+    screen.blit(phantom[Blinky].img, (phantom[Blinky].pos[0], phantom[Blinky].pos[1]))
+    screen.blit(phantom[Inky  ].img, (phantom[Inky  ].pos[0], phantom[Inky  ].pos[1]))
+    screen.blit(phantom[Clyde ].img, (phantom[Clyde ].pos[0], phantom[Clyde ].pos[1]))
+    screen.blit(phantom[Pinky ].img, (phantom[Pinky ].pos[0], phantom[Pinky ].pos[1]))
     screen.blit(font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
-  
-    player.display() #display player
-       
+    player.display()
     pygame.display.update()
+
     #Waits until sound is over so game can start
     pygame.time.wait(2150)
-    pygame.mixer.music.unload()
-    load_music('music1.wav',volume)
-    pygame.mixer.music.play(loops=-1)
-    last_music = 'music1.wav'
+    play_music('music1.wav',volume)
+    level_music = 'music1.wav'
+    now_music = 'music1.wav'
     #counter to change chomp sound
     counter = True
     
@@ -395,13 +386,6 @@ def game(volume,game_speed,diff):
     running = True
     while running:
         clock.tick(game_speed)
-        
-        if(player.end_game):
-            pygame.time.wait(2000)
-            running = False
-            power_song = False
-            pygame.mixer.music.unload()
-            menu.run()
         
         for event in pygame.event.get():
 
@@ -426,6 +410,8 @@ def game(volume,game_speed,diff):
 
         #Handles player movement
         player.move()
+
+        #changes pato-man's mouth animation
         player.aberto=not player.aberto
 
 
@@ -435,6 +421,7 @@ def game(volume,game_speed,diff):
         else:
             player.change = 0
 
+        #pato-man eats a normal pellet
         if matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 2:
 
             for coins in coins_list: #Search the atual coins in coins_list
@@ -452,37 +439,35 @@ def game(volume,game_speed,diff):
                 eat2.play()
             counter = not counter
 
+        #Pato-man eats a power pellet
         elif matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 3:
             
-            if power_on == False:
-                pygame.mixer.music.unload()
-                player.eaten_phantom = 0
-                load_music('power.wav',volume)
-                pygame.mixer.music.play(loops=-1)
-            
-            
-            if(phantom[Blinky].mode != EATEN and phantom[Blinky].mode != LEAVE):
+            player.eaten_phantom=0
+
+            #update ghots' state
+            if (phantom[Blinky].mode != EATEN and phantom[Blinky].mode != LEAVE):
                 if(phantom[Blinky].mode != FRIGHTENED):
                     phantom[Blinky].change_direct()
-                
                 phantom[Blinky].mode = FRIGHTENED
                 phantom[Blinky].moviments = 0
-            if(phantom[Inky  ].mode != EATEN and phantom[Inky  ].mode != LEAVE):
+            if (phantom[Inky  ].mode != EATEN and phantom[Inky  ].mode != LEAVE):
                 if(phantom[Inky  ].mode != FRIGHTENED):
                     phantom[Inky  ].change_direct()
                 phantom[Inky  ].mode = FRIGHTENED
                 phantom[Inky  ].moviments = 0
-            if(phantom[Clyde ].mode != EATEN and phantom[Clyde ].mode != LEAVE):
+            if (phantom[Clyde ].mode != EATEN and phantom[Clyde ].mode != LEAVE):
                 if(phantom[Clyde ].mode != FRIGHTENED):
                     phantom[Clyde ].change_direct()
                 phantom[Clyde ].mode = FRIGHTENED
                 phantom[Clyde ].moviments = 0
-            if(phantom[Pinky ].mode != EATEN and phantom[Pinky ].mode != LEAVE):
+            if (phantom[Pinky ].mode != EATEN and phantom[Pinky ].mode != LEAVE):
                 if(phantom[Pinky ].mode != FRIGHTENED):
                     phantom[Pinky ].change_direct()
                 phantom[Pinky ].mode = FRIGHTENED
                 phantom[Pinky ].moviments = 0
-            
+
+            if(phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED):
+                power_on = True
             
             for power in power_list: #Search the atual power in power_list
                 if power.rect.x == player.grid_pos()[1] * TS and power.rect.y == player.grid_pos()[0] * TS:
@@ -498,40 +483,39 @@ def game(volume,game_speed,diff):
             else:
                 eat2.play()
             counter = not counter
-        
-        power_on = False
-        if(phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED):
-            power_on = True
-        
-        if power_on == False:
-            pygame.mixer.music.unload()
-        
+            
+        #music handler
+        #------------------------------------------
+        if (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED):
+            if now_music!='power.wav' and now_music!='eyes.wav':
+               now_music='power.wav'
+               play_music('power.wav',volume)
+
+        if (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN):
+            if now_music!='eyes.wav':
+               now_music='eyes.wav'
+               play_music('eyes.wav',volume)
+        elif now_music=='eyes.wav' and not (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN):
+           now_music=''
+
+        if not (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED) and not (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN):
+            if now_music!=level_music:
+               now_music=level_music
+               play_music(level_music,volume)
+
         if len(power_list)+len(coins_list)==144:
-           pygame.mixer.music.unload()
-           last_music = 'music2.wav'
-           load_music(last_music,volume)
-           pygame.mixer.music.play(loops=-1)
+           level_music = 'music2.wav'
 
         if len(power_list)+len(coins_list)==83:
-           pygame.mixer.music.unload()
-           last_music = 'music3.wav'
-           load_music(last_music,volume)
-           pygame.mixer.music.play(loops=-1)
+           level_music = 'music3.wav'
 
         if len(power_list)+len(coins_list)==27:
-           pygame.mixer.music.unload()
-           last_music = 'music4.wav'
-           load_music(last_music,volume)
-           pygame.mixer.music.play(loops=-1)        
+           level_music = 'music4.wav'
+        #------------------------------------------
 
-
+        #goes back to menu when level is finished
         if len(power_list)==0 and len(coins_list)==0:
-            power_song = False
-            running=False
-            pygame.mixer.music.unload()
-            pygame.mixer.stop()
-            menu.run()
-
+           go_to_menu()
 
         #Display objects on screen
         screen.fill((0, 0, 0))
@@ -545,7 +529,7 @@ def game(volume,game_speed,diff):
         phantom[Pinky ].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
         
         player.collision()
-        
+
         #Display coins and powers on screen
         all_sprites_list.draw(screen)
         
