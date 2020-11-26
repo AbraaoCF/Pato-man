@@ -27,6 +27,7 @@ CHASE = 1
 EATEN = 2
 FRIGHTENED = 3
 LEAVE = 4
+WAITING = 5
 
 TS = 8
 
@@ -62,6 +63,11 @@ imgs =  [
 [[load_img('PinkyUp1.png' ), load_img('PinkyUp2.png' )], [load_img('PinkyLeft1.png' ), load_img('PinkyLeft2.png' )], [load_img('PinkyDown1.png' ), load_img('PinkyDown2.png' )], [load_img('PinkyRight1.png' ), load_img('PinkyRight2.png' )]],
 ]
 		]
+		
+frightened_img = [
+[load_img('Frightened1.png'), load_img('Frightened2.png')],
+[load_img('FrightenedBlink1.png'), load_img('FrightenedBlink2.png')]
+				 ]
 
 Blinky_img = pygame.Surface((16,16))
 Blinky_img.fill((255,0,0))
@@ -83,16 +89,15 @@ class Ghost(pygame.sprite.Sprite):
 		self.ghost = type_ghost
 		
 		if(self.ghost == Inky):
-			self.pos = (22 * TS, 36 * TS)
+			self.pos = (23 * TS, 35 * TS)
 		if(self.ghost == Blinky):
 			self.pos = (27 * TS, 28 * TS)
 		if(self.ghost == Clyde):
-			self.pos = (32 * TS, 36 * TS)
+			self.pos = (31 * TS, 35 * TS)
 		if(self.ghost == Pinky):
-			self.pos = (27 * TS, 36 * TS)
-			
+			self.pos = (27 * TS, 35 * TS)
+		
 		self.mode = LEAVE
-		if(self.ghost == Blinky): self.mode = SCATTER
 		
 		pygame.sprite.Sprite.__init__(self)
 		self.direct = DOWN
@@ -101,6 +106,21 @@ class Ghost(pygame.sprite.Sprite):
 		self.rect = self.img.get_rect()
 		self.rect.x = self.pos[0]-Ajuste
 		self.rect.y = self.pos[1]-Ajuste
+		
+		if(self.ghost == Pinky):
+			self.mode = LEAVE
+		if(self.ghost == Blinky):
+			self.mode = SCATTER
+		if(self.ghost == Clyde):
+			self.mode = WAITING
+			self.waiting_moviments = -30
+			self.up = True
+		if(self.ghost == Inky):
+			self.mode = WAITING
+			self.waiting_moviments = 0
+			self.up = True
+		
+		self.frightened = False
 		
 		self.box = False
 		
@@ -121,10 +141,28 @@ class Ghost(pygame.sprite.Sprite):
 			self.direct = RIGHT
 	
 	def set_image(self):
-		self.img = imgs[self.mode][self.ghost][self.direct][self.change]
-		self.rect = imgs[self.mode][self.ghost][self.direct][self.change].get_rect()
+		
+		real_mode = self.mode
+		
+		if(self.mode == WAITING):
+			if(self.frightened):
+				self.mode = FRIGHTENED
+			else:
+				self.mode = SCATTER
+		if(self.mode == LEAVE):
+			if(self.frightened):
+				self.mode = FRIGHTENED
+		
+		if(self.mode == FRIGHTENED and self.moviments >= 160):
+			self.img = frightened_img[self.moviments % 2][self.change]
+		else:
+			self.img = imgs[self.mode][self.ghost][self.direct][self.change]
+		
+		self.rect = self.img.get_rect()	
 		self.rect.x = self.pos[0]-Ajuste
 		self.rect.y = self.pos[1]-Ajuste
+		
+		self.mode = real_mode
 	
 	def move(self, x, y, direct, redx, redy, coins_left):
 		possible_moviments = []
@@ -205,13 +243,13 @@ class Ghost(pygame.sprite.Sprite):
 			
 			if(self.box):
 				if(self.ghost == Inky):
-					self.target = (36, 22)
+					self.target = (35, 23)
 				if(self.ghost == Blinky):
-					self.target = (36, 27)
+					self.target = (35, 27)
 				if(self.ghost == Clyde):
-					self.target = (36, 32)
+					self.target = (35, 31)
 				if(self.ghost == Pinky):
-					self.target = (36, 27)
+					self.target = (35, 27)
 			else: 
 				self.target = (28, 27)
 			
@@ -300,13 +338,13 @@ class Ghost(pygame.sprite.Sprite):
 			self.target = (28, 27)
 			
 			#Find possible Moviments
-			if(self.direct != LEFT and matriz[self.pos[1] // TS][(self.pos[0] // TS + 1) % 56] != 1):
+			if(matriz[self.pos[1] // TS][(self.pos[0] // TS + 1) % 56] != 1):
 				possible_moviments.append([self.dis(self.pos[1] // TS, (self.pos[0] // TS + 1) % 56), RIGHT, self.pos[1] // TS, (self.pos[0] // TS + 1) % 56])
-			if(self.direct != RIGHT and matriz[self.pos[1] // TS][self.pos[0] // TS - 1] != 1):
+			if(matriz[self.pos[1] // TS][self.pos[0] // TS - 1] != 1):
 				possible_moviments.append([self.dis(self.pos[1] // TS, (self.pos[0]//TS - 1 + 56) % 56), LEFT, self.pos[1] // TS, (self.pos[0] // TS - 1 + 56) % 56])
-			if(self.direct != UP and matriz[self.pos[1] // TS + 1][self.pos[0] // TS] != 1):
+			if(matriz[self.pos[1] // TS + 1][self.pos[0] // TS] != 1):
 				possible_moviments.append([self.dis(self.pos[1] // TS + 1, self.pos[0] // TS), DOWN, self.pos[1] // TS + 1, self.pos[0] // TS])
-			if(self.direct != DOWN and matriz[self.pos[1] // TS - 1][self.pos[0] // TS] != 1):
+			if(matriz[self.pos[1] // TS - 1][self.pos[0] // TS] != 1):
 				
 				can = True
 				
@@ -321,13 +359,44 @@ class Ghost(pygame.sprite.Sprite):
 			self.pos = (possible_moviments[0][3] * TS, possible_moviments[0][2] * TS)
 			self.direct = possible_moviments[0][1]
 			
+			if(self.frightened and self.moviments >= 192):
+				self.frightened = False
+			
+			#Check if the ghost leave the box
 			if(self.target[0] == (self.pos[1] // TS) and self.target[1] == (self.pos[0] // TS)):
-				if(coins_left < 80 and self.ghost == Blinky):
+				if(self.frightened):
+					self.mode = FRIGHTENED
+					self.frightened = False
+				elif(coins_left < 80 and self.ghost == Blinky):
 					self.mode = CHASE
+					self.moviments = 0
 				else:
 					self.mode = SCATTER
-				
-				self.change_direct()
+					self.moviments = 0
+		
+		elif(self.mode == WAITING):
+			
+			if(self.up):
+				if(self.pos[1] // TS == 33):
+					self.up = False
+					self.pos = (self.pos[0], self.pos[1] + TS)
+					self.direct = DOWN
+				else:
+					self.pos = (self.pos[0], self.pos[1] - TS)
+			elif(not self.up):
+				if(self.pos[1] // TS == 35):
+					self.up = True
+					self.waiting_moviments += 1
 					
-				self.moviments = 0
+					if(self.waiting_moviments >= 10):
+						self.mode = LEAVE
+					else:
+						self.pos = (self.pos[0], self.pos[1] - TS)
+						self.direct = UP
+				else:
+					self.pos = (self.pos[0], self.pos[1] + TS)
+			
+			if(self.moviments >= 192):
+				self.frightened = False
+			
 		self.set_image()

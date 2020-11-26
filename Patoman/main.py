@@ -94,6 +94,7 @@ def game(volume,game_speed,diff):
     EATEN = 2
     FRIGHTENED = 3
     LEAVE = 4
+    WAITING = 5
 
     phantom = [Ghost.Ghost(0), Ghost.Ghost(1), Ghost.Ghost(2), Ghost.Ghost(3)]
 
@@ -361,14 +362,17 @@ def game(volume,game_speed,diff):
     #Plays the beginning sound
     play_music('begin.wav',volume)
     pygame.time.wait(2150)
-
+    
+    #Set sprite position right
+    Ajuste = 6
+    
     #initial screen appearence 2
     screen.blit(background,(0,6*TS))
     all_sprites_list.draw(screen) #Print the sprites of the group of all sprites
-    screen.blit(phantom[Blinky].img, (phantom[Blinky].pos[0], phantom[Blinky].pos[1]))
-    screen.blit(phantom[Inky  ].img, (phantom[Inky  ].pos[0], phantom[Inky  ].pos[1]))
-    screen.blit(phantom[Clyde ].img, (phantom[Clyde ].pos[0], phantom[Clyde ].pos[1]))
-    screen.blit(phantom[Pinky ].img, (phantom[Pinky ].pos[0], phantom[Pinky ].pos[1]))
+    screen.blit(phantom[Blinky].img, (phantom[Blinky].pos[0] - Ajuste, phantom[Blinky].pos[1] - Ajuste))
+    screen.blit(phantom[Inky  ].img, (phantom[Inky  ].pos[0] - Ajuste, phantom[Inky  ].pos[1] - Ajuste))
+    screen.blit(phantom[Clyde ].img, (phantom[Clyde ].pos[0] - Ajuste, phantom[Clyde ].pos[1] - Ajuste))
+    screen.blit(phantom[Pinky ].img, (phantom[Pinky ].pos[0] - Ajuste, phantom[Pinky ].pos[1] - Ajuste))
     screen.blit(font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
     player.display()
     pygame.display.update()
@@ -380,8 +384,6 @@ def game(volume,game_speed,diff):
     now_music = 'music1.wav'
     #counter to change chomp sound
     counter = True
-    
-    Ajuste = 6
     
     running = True
     while running:
@@ -445,28 +447,42 @@ def game(volume,game_speed,diff):
             player.eaten_phantom=0
 
             #update ghots' state
-            if (phantom[Blinky].mode != EATEN and phantom[Blinky].mode != LEAVE):
-                if(phantom[Blinky].mode != FRIGHTENED):
-                    phantom[Blinky].change_direct()
-                phantom[Blinky].mode = FRIGHTENED
+            if (phantom[Blinky].mode != EATEN):
+                if(phantom[Blinky].mode == LEAVE):
+                    phantom[Blinky].frightened = True
+                else:
+                    if(phantom[Blinky].mode != FRIGHTENED):
+                        phantom[Blinky].change_direct()
+                    phantom[Blinky].mode = FRIGHTENED
                 phantom[Blinky].moviments = 0
-            if (phantom[Inky  ].mode != EATEN and phantom[Inky  ].mode != LEAVE):
-                if(phantom[Inky  ].mode != FRIGHTENED):
-                    phantom[Inky  ].change_direct()
-                phantom[Inky  ].mode = FRIGHTENED
+            if (phantom[Inky  ].mode != EATEN):
+                if(phantom[Inky  ].mode == WAITING or phantom[Inky  ].mode == LEAVE):
+                    phantom[Inky  ].frightened = True
+                else:
+                    if(phantom[Inky  ].mode != FRIGHTENED):
+                        phantom[Inky  ].change_direct()
+                    phantom[Inky  ].mode = FRIGHTENED
                 phantom[Inky  ].moviments = 0
-            if (phantom[Clyde ].mode != EATEN and phantom[Clyde ].mode != LEAVE):
-                if(phantom[Clyde ].mode != FRIGHTENED):
-                    phantom[Clyde ].change_direct()
-                phantom[Clyde ].mode = FRIGHTENED
+            if (phantom[Clyde ].mode != EATEN):
+                if(phantom[Clyde  ].mode == WAITING or phantom[Clyde  ].mode == LEAVE):
+                    phantom[Clyde  ].frightened = True
+                else:
+                    if(phantom[Clyde ].mode != FRIGHTENED):
+                        phantom[Clyde ].change_direct()
+                    phantom[Clyde ].mode = FRIGHTENED
                 phantom[Clyde ].moviments = 0
-            if (phantom[Pinky ].mode != EATEN and phantom[Pinky ].mode != LEAVE):
-                if(phantom[Pinky ].mode != FRIGHTENED):
-                    phantom[Pinky ].change_direct()
-                phantom[Pinky ].mode = FRIGHTENED
+            if (phantom[Pinky ].mode != EATEN):
+                if(phantom[Pinky ].mode == LEAVE):
+                    phantom[Pinky ].frightened = True
+                else:
+                    if(phantom[Pinky ].mode != FRIGHTENED):
+                        phantom[Pinky ].change_direct()
+                    phantom[Pinky ].mode = FRIGHTENED
                 phantom[Pinky ].moviments = 0
 
             if(phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED):
+                power_on = True
+            if(phantom[Blinky].frightened or phantom[Inky  ].frightened or phantom[Clyde ].frightened or phantom[Pinky ].frightened):
                 power_on = True
             
             for power in power_list: #Search the atual power in power_list
@@ -498,7 +514,7 @@ def game(volume,game_speed,diff):
         elif now_music=='eyes.wav' and not (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN):
            now_music=''
 
-        if not (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED) and not (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN):
+        if not (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED) and not (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN or phantom[Blinky].frightened or phantom[Inky  ].frightened or phantom[Clyde ].frightened or phantom[Pinky ].frightened):
             if now_music!=level_music:
                now_music=level_music
                play_music(level_music,volume)
@@ -529,7 +545,7 @@ def game(volume,game_speed,diff):
         phantom[Pinky ].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
         
         player.collision()
-
+        
         #Display coins and powers on screen
         all_sprites_list.draw(screen)
         
