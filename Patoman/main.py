@@ -5,7 +5,7 @@ import shelve
 from Patoman import Matriz
 from Patoman import menu
 from Patoman import Ghost
-power_song = False
+
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 shelve_path=os.path.join(main_dir,"score.txt")
 
@@ -36,7 +36,6 @@ def go_to_menu():
    menu.run()
 
 def game(volume,game_speed,diff):
-    global power_song
     #Initializing modules
     pygame.init()
     if not pygame.mixer.get_init():
@@ -111,8 +110,10 @@ def game(volume,game_speed,diff):
             self.image = patoFC
             self.rect = self.image.get_rect()
             self.aberto=False
-            self.rect.x = self.pos[0]
-            self.rect.y = self.pos[1]
+            self.rect.x = self.pos[0]-4
+            self.rect.y = self.pos[1]-8
+            self.rect.height = 16
+            self.rect.width = 16
             self.eaten_phantom = 0
             
         def set_xy(self):
@@ -164,6 +165,7 @@ def game(volume,game_speed,diff):
 
         def move_absolute(self,x,y):
             self.pos=(x,y)
+            self.set_xy()
 
         def grid_pos(self):
             return (self.pos[1]//TS,self.pos[0]//TS)
@@ -178,7 +180,6 @@ def game(volume,game_speed,diff):
             elif self.direct==LEFT:
                 self.img_index+=3
             screen.blit(self.imgs[self.img_index],(self.pos[0]-4,self.pos[1]-8))
-            self.rect = self.imgs[self.img_index].get_rect()
             self.set_xy()
             self.img_index=0
         
@@ -479,11 +480,6 @@ def game(volume,game_speed,diff):
                         phantom[Pinky ].change_direct()
                     phantom[Pinky ].mode = FRIGHTENED
                 phantom[Pinky ].moviments = 0
-
-            if(phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED):
-                power_on = True
-            if(phantom[Blinky].frightened or phantom[Inky  ].frightened or phantom[Clyde ].frightened or phantom[Pinky ].frightened):
-                power_on = True
             
             for power in power_list: #Search the atual power in power_list
                 if power.rect.x == player.grid_pos()[1] * TS and power.rect.y == player.grid_pos()[0] * TS:
@@ -538,21 +534,17 @@ def game(volume,game_speed,diff):
         score.display()
         screen.blit(background,(0, 6*TS))
         player.display()  
-        
-        phantom[Blinky].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
-        phantom[Inky  ].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, phantom[Blinky].pos[1] // TS, phantom[Blinky].pos[0] // TS, len(power_list) + len(coins_list))
-        phantom[Clyde ].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
-        phantom[Pinky ].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
-        
+
+        for i in range(4): 
+           phantom[i].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
+      
         player.collision()
         
         #Display coins and powers on screen
         all_sprites_list.draw(screen)
-        
-        screen.blit(phantom[Blinky].img, (phantom[Blinky].pos[0]-Ajuste, phantom[Blinky].pos[1]-Ajuste))
-        screen.blit(phantom[Inky  ].img, (phantom[Inky  ].pos[0]-Ajuste, phantom[Inky  ].pos[1]-Ajuste))
-        screen.blit(phantom[Clyde ].img, (phantom[Clyde ].pos[0]-Ajuste, phantom[Clyde ].pos[1]-Ajuste))
-        screen.blit(phantom[Pinky ].img, (phantom[Pinky ].pos[0]-Ajuste, phantom[Pinky ].pos[1]-Ajuste))
+
+        for i in range(4):         
+           screen.blit(phantom[i].img, (phantom[i].pos[0]-Ajuste, phantom[i].pos[1]-Ajuste))
 
         pygame.display.update()
 
