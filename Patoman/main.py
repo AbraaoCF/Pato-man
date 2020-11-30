@@ -2,9 +2,9 @@ import pygame
 import os
 from pygame.locals import *
 import shelve
-from Patoman import Matriz
-from Patoman import menu
-from Patoman import Ghost
+import Matriz
+import menu
+import Ghost
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 shelve_path=os.path.join(main_dir,"score.txt")
@@ -54,7 +54,7 @@ def game(volume,game_speed,diff):
     patoAB = load_img('patoAB.png')
     patoAE = load_img('patoAE.png')
     arrow = load_img('arrow.png')
-
+    
     #Loads the sounds
     eat1 = load_sound('pac_chomp_one.wav',volume)
     eat2 = load_sound('pac_chomp_two.wav',volume)
@@ -202,7 +202,32 @@ def game(volume,game_speed,diff):
                     
                     phantom[ghost.ghost].mode = EATEN
                     eat_ghost.play()
-                    pygame.time.wait(200)
+
+                    #display everything but pacman and eaten ghost
+                    screen.fill((0, 0, 0))
+                    score.display()
+                    screen.blit(background,(0, 6*TS))                    
+                    all_sprites_list.draw(screen)
+                    for i in range(4):
+                       if i!=ghost.ghost:
+                          screen.blit(phantom[i].img, (phantom[i].pos[0]-Ajuste, phantom[i].pos[1]-Ajuste))
+
+                    #display score got
+                    screen.blit(load_img('score'+str(self.eaten_phantom)+'.png'),(ghost.pos[0]-7,ghost.pos[1]))
+                    pygame.display.update()
+
+                    pygame.time.wait(1000)
+
+                    #displays everything normally
+                    screen.fill((0, 0, 0))
+                    score.display()
+                    screen.blit(background,(0, 6*TS))                    
+                    all_sprites_list.draw(screen)
+                    for i in range(4):
+                        screen.blit(phantom[i].img, (phantom[i].pos[0]-Ajuste, phantom[i].pos[1]-Ajuste))
+                    self.display()
+                    pygame.display.update()
+                    
                     phantom[ghost.ghost].box = False
                     score.add(200 * (2 ** self.eaten_phantom))
                     self.eaten_phantom += 1

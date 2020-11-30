@@ -1,7 +1,7 @@
 import pygame
 import os
 from pygame.locals import *
-from Patoman import main as level1
+import main as level1
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 
