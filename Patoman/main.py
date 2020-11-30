@@ -110,8 +110,10 @@ def game(volume,game_speed,diff):
             self.image = patoFC
             self.rect = self.image.get_rect()
             self.aberto=False
-            self.rect.x = self.pos[0]
-            self.rect.y = self.pos[1]
+            self.rect.x = self.pos[0]-4
+            self.rect.y = self.pos[1]-8
+            self.rect.height = 16
+            self.rect.width = 16
             self.eaten_phantom = 0
             
         def set_xy(self):
@@ -163,6 +165,7 @@ def game(volume,game_speed,diff):
 
         def move_absolute(self,x,y):
             self.pos=(x,y)
+            self.set_xy()
 
         def grid_pos(self):
             return (self.pos[1]//TS,self.pos[0]//TS)
@@ -177,7 +180,6 @@ def game(volume,game_speed,diff):
             elif self.direct==LEFT:
                 self.img_index+=3
             screen.blit(self.imgs[self.img_index],(self.pos[0]-4,self.pos[1]-8))
-            self.rect = self.imgs[self.img_index].get_rect()
             self.set_xy()
             self.img_index=0
         

@@ -2,7 +2,7 @@ import random
 import os
 import pygame
 from pygame.locals import *
-from Patoman import Matriz
+import Matriz
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 def load_img(name):
@@ -104,6 +104,8 @@ class Ghost(pygame.sprite.Sprite):
 		self.change = 0
 		self.img = imgs[self.mode][self.ghost][self.direct][self.change]
 		self.rect = self.img.get_rect()
+		self.rect.height = 16
+		self.rect.width = 16
 		self.rect.x = self.pos[0]-Ajuste
 		self.rect.y = self.pos[1]-Ajuste
 		
@@ -158,7 +160,6 @@ class Ghost(pygame.sprite.Sprite):
 		else:
 			self.img = imgs[self.mode][self.ghost][self.direct][self.change]
 		
-		self.rect = self.img.get_rect()	
 		self.rect.x = self.pos[0]-Ajuste
 		self.rect.y = self.pos[1]-Ajuste
 		
@@ -227,8 +228,6 @@ class Ghost(pygame.sprite.Sprite):
 			#Choose a random direction
 			random_direct = random.choice(possible_moviments)
 			self.pos = (random_direct[1] * TS, random_direct[0] * TS)
-			self.rect.x = random_direct[1] * TS
-			self.rect.y = random_direct[0] * TS
 			self.direct = random_direct[2]
 			
 			if(self.moviments == 192):
