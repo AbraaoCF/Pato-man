@@ -88,7 +88,8 @@ def setup(volume):
    eat2 = load_sound('pac_chomp_two.wav',volume)
    death = load_sound('death.wav',volume)
    eat_ghost = load_sound('eat.wav',volume)
-   win = load_sound('win_sound.wav', volume)
+   win = load_sound('win_sound.wav',volume)
+   oneup = load_sound('1up.wav',volume)
 
    #loads the fonts
    font=load_font("emulogic.ttf",16) 
@@ -235,7 +236,7 @@ def setup(volume):
             if new_score>=10000*self.limit:
                lives.add()
                self.limit+=1
-               #som de 1up
+               oneup.play() #som de 1up
             self.score=str(new_score) #updates current score
             if int(self.score)>int(self.high_score): #checks if we need new high score
                 d = shelve.open(shelve_path) #open high score memory
