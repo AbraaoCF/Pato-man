@@ -69,6 +69,8 @@ def setup(volume):
         
    #Loads images
    background = load_img('background.png')
+   background_white = load_img('background_white.png')
+   background_open = load_img('background_open.png')
    power_img = load_img('corn.png')
    coin_img = load_img('bit.png')
    patoFC = load_img('patoFC.png')
@@ -86,6 +88,7 @@ def setup(volume):
    eat2 = load_sound('pac_chomp_two.wav',volume)
    death = load_sound('death.wav',volume)
    eat_ghost = load_sound('eat.wav',volume)
+   win = load_sound('win_sound.wav', volume)
 
    #loads the fonts
    font=load_font("emulogic.ttf",16) 
@@ -624,7 +627,27 @@ def setup(volume):
 
            #goes back to menu when level is finished
            if len(consumables)==0:
-              #victory music?
+              win.play()
+
+              for frame in range(10):
+                if frame == 5:
+                    win.play()
+                
+                screen.fill((0,0,0))
+                score.display()
+                player.display()
+                screen.blit(background_white, (0, 6 * TS))
+                pygame.display.update()
+                pygame.time.wait(100)
+
+                screen.fill((0,0,0))
+                score.display()
+                player.display()
+                screen.blit(background_open, (0, 6 * TS))
+                pygame.display.update()
+                pygame.time.wait(100)
+                
+                
               game(lives.lives,score.score,player_speed=levels[index][0],ghost_speed=levels[index][1],is_gamer=levels[index][2])
 
            #Display objects on screen
