@@ -242,9 +242,9 @@ def run():
 
                        elif menu.type == "Start Menu":
                            if cursor.pos() == menu.positions[0]:   #start level 1
-                               level1.setup(game_volume/200)
+                               level1.setup(game_volume/200,False)
                            elif cursor.pos() == menu.positions[1]: #start level 1
-                               level1.setup(game_volume/200)
+                               level1.setup(game_volume/200,True)
                            elif cursor.pos() == menu.positions[2]: #return buttom
                                menu = Main_Menu()
                            cursor.index = 0 #reinitialize cursor in the main menu on the right position
