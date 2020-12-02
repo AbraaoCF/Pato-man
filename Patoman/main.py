@@ -100,7 +100,7 @@ def setup(volume,is_gamer):
    #Clock Speed
    clock = pygame.time.Clock()
 
-   def game(current_lives,current_score,player_speed,ghost_speed,is_gamer):
+   def game(current_lives,current_score,player_normal_speed,player_fast_speed,ghost_normal_speed,ghost_slow_speed,is_gamer):
       def reset():
          #Inital screen appearence
          screen.fill((0, 0, 0))
@@ -307,6 +307,7 @@ def setup(volume,is_gamer):
             self.image = patoFC
             self.aberto=False
             
+            
             self.rect = self.image.get_rect()
 
             self.rect.x = self.pos[0]
@@ -315,9 +316,13 @@ def setup(volume,is_gamer):
             self.rect.width = 16
 
             self.eaten_phantom = 0
-
+            self.set_image()
             self.count = True
-            
+
+            self.time=0
+            self.normal_speed=player_normal_speed
+            self.fast_speed=player_fast_speed
+            self.speed=self.normal_speed
          def set_xy(self):
             self.rect.x = self.pos[0]
             self.rect.y = self.pos[1]
@@ -337,21 +342,21 @@ def setup(volume,is_gamer):
                 self.direct = self.memory_direct
 
             if self.direct == UP:
-                self.pos = (self.pos[0],self.pos[1]-TS)
+               self.pos = (self.pos[0],self.pos[1]-TS)
             if self.direct == RIGHT:
-                self.pos = (self.pos[0]+TS,self.pos[1])
+               self.pos = (self.pos[0]+TS,self.pos[1])
             if self.direct == DOWN:
-                self.pos = (self.pos[0],self.pos[1]+TS)
+               self.pos = (self.pos[0],self.pos[1]+TS)
             if self.direct == LEFT:
-                self.pos=(self.pos[0]-TS,self.pos[1])
-
+               self.pos=(self.pos[0]-TS,self.pos[1])
+                   
             if self.pos[1] == 34*TS:
                 if self.pos[0] < 0:
                     self.move_absolute(screen.get_width()-TS,self.pos[1])
                 elif self.pos[0] >= screen.get_width():
                     self.move_absolute(0,self.pos[1])
 
-            if matriz[self.grid_pos()[0]][self.grid_pos()[1]] == 1 or matriz[self.grid_pos()[0]][self.grid_pos()[1]] == 4:
+            if matriz[self.grid_pos()[0]][self.grid_pos()[1]] == 1:
                 if self.direct == UP:
                     self.pos = (self.pos[0], self.pos[1] + TS)
                 if self.direct == RIGHT:
@@ -372,6 +377,7 @@ def setup(volume,is_gamer):
 
             self.last_direct = self.direct
             self.set_xy()
+            self.set_image()
 
          def move_absolute(self,x,y):
             self.pos=(x,y)
@@ -393,7 +399,8 @@ def setup(volume,is_gamer):
                pygame.time.wait(150)
             pygame.time.wait(800)
             
-         def display(self):
+         def set_image(self):
+            self.img_index=0
             if self.aberto:
                 self.img_index+=4
             if self.direct==RIGHT:
@@ -402,10 +409,11 @@ def setup(volume,is_gamer):
                 self.img_index+=2
             elif self.direct==LEFT:
                 self.img_index+=3
-            screen.blit(self.imgs[self.img_index],(self.pos[0]-4,self.pos[1]-4))
             self.set_xy()
-            self.img_index=0
-        
+
+         def display(self):
+           screen.blit(self.imgs[self.img_index],(self.grid_pos()[1]*TS-4,self.grid_pos()[0]*TS-4))
+            
          def collision(self):
             
             phantom_player_collision = pygame.sprite.spritecollide(player, phantom_list, False)
@@ -473,6 +481,11 @@ def setup(volume,is_gamer):
       phantom_list.add(phantom[Clyde ])
       phantom_list.add(phantom[Pinky ])
 
+      for i in range(4):
+         phantom[i].normal_speed=ghost_normal_speed
+         phantom[i].slow_speed=ghost_slow_speed
+         phantom[i].speed=ghost_normal_speed
+      
       player = Player()
       score = Score(current_score,is_gamer)
       lives = Lives(current_lives,is_gamer)
@@ -523,9 +536,9 @@ def setup(volume,is_gamer):
 
       running = True
       player_time=0
-      ghost_time=0
+
       while running:
-           clock.tick(15)
+           clock.tick(20)
            
            for event in pygame.event.get():
 
@@ -549,25 +562,22 @@ def setup(volume,is_gamer):
                       pause_game()
 
            #Handles player movement
-           #player_time+=player_speed
-           #if player_time>=100:
-           #   player_time=player_time%100
-           player.move()
+           player.time+=player.speed
+           if player.time>=100:
+              player.time=player.time%100
+              player.move()
+              #changes pato-man's mouth animation
+              player.aberto=not player.aberto
 
-           #ghost_time+=ghost_speed
-           #if ghost_time>=100:
-           #   ghost_time=ghost_time%100
-           for i in range(4): 
-              phantom[i].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
-           
-           #changes pato-man's mouth animation
-           player.aberto=not player.aberto
-
+           for i in range(4):
+              phantom[i].time+=phantom[i].speed
+              if phantom[i].time>=100:
+                 for j in range(phantom[i].time//100):
+                    phantom[i].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
+                 phantom[i].time=phantom[i].time%100
            #If after .move() memory_direction failed or not
            if player.change_direct == 2:
                player.change_direct = 1
-           else:
-               player.change_direct = 0
 
            #pato-man eats a normal pellet
            if matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 2:
@@ -619,6 +629,7 @@ def setup(volume,is_gamer):
            #music handler
            #------------------------------------------
            if (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED):
+               player.speed=player.fast_speed
                if now_music!='power.wav' and now_music!='eyes.wav':
                   now_music='power.wav'
                   play_music('power.wav',volume)
@@ -631,6 +642,7 @@ def setup(volume,is_gamer):
               now_music=''
 
            if not (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED) and not (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN or phantom[Blinky].frightened or phantom[Inky  ].frightened or phantom[Clyde ].frightened or phantom[Pinky ].frightened):
+               player.speed=player.normal_speed
                if now_music!=level_music:
                   now_music=level_music
                   play_music(level_music,volume)
@@ -689,14 +701,14 @@ def setup(volume,is_gamer):
 
    index=0
    if is_gamer:
-      levels=[[80,60,True],[80,65,True]]
-      game(current_lives=1,current_score='00',player_speed=levels[index][0],ghost_speed=levels[index][1],is_gamer=levels[index][2])
+      levels=[[100,90,150,100,True],[100,90,150,100,True]]
+      game(current_lives=1,current_score='00',player_normal_speed=levels[index][0],player_fast_speed=levels[index][1],ghost_normal_speed=levels[index][2],ghost_slow_speed=levels[index][3],is_gamer=levels[index][4])
    else:
-      levels=[[50,30,False],[50,35,False]]
-      game(current_lives=3,current_score='00',player_speed=levels[index][0],ghost_speed=levels[index][1],is_gamer=levels[index][2])
+      levels=[[80,90,75,50,False],[80,90,75,50,False]]
+      game(current_lives=3,current_score='00',player_normal_speed=levels[index][0],player_fast_speed=levels[index][1],ghost_normal_speed=levels[index][2],ghost_slow_speed=levels[index][3],is_gamer=levels[index][4])
    #victory screen
       
    go_to_menu()
       
 if __name__=='__main__':
-   setup(0.10,False)
+   setup(0.10,True)
