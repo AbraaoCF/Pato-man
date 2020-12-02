@@ -106,8 +106,8 @@ class Ghost(pygame.sprite.Sprite):
 		self.rect = self.img.get_rect()
 		self.rect.height = 16
 		self.rect.width = 16
-		self.rect.x = self.pos[0]-Ajuste
-		self.rect.y = self.pos[1]-Ajuste
+		self.rect.x = self.pos[0]
+		self.rect.y = self.pos[1]
 		
 		if(self.ghost == Pinky):
 			self.mode = LEAVE
@@ -160,8 +160,8 @@ class Ghost(pygame.sprite.Sprite):
 		else:
 			self.img = imgs[self.mode][self.ghost][self.direct][self.change]
 		
-		self.rect.x = self.pos[0]-Ajuste
-		self.rect.y = self.pos[1]-Ajuste
+		self.rect.x = self.pos[0]
+		self.rect.y = self.pos[1]
 		
 		self.mode = real_mode
 	
