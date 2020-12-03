@@ -2,9 +2,11 @@ import pygame
 import os
 from pygame.locals import *
 import shelve
-import Matriz
-import menu
-import Ghost
+import time
+from Patoman import Matriz
+from Patoman import menu
+from Patoman import Ghost
+
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 shelve_path=os.path.join(main_dir,"score.txt")
@@ -16,7 +18,7 @@ DOWN  = 2
 RIGHT = 3
 
 #Tile Size (Define the number of pixels on each tile)
-TS = 8
+TS = 1
 
 #Defining Ghosts
 Inky = 0
@@ -95,7 +97,7 @@ def setup(volume,is_gamer):
    big_font=load_font("emulogic.ttf",32)
 
    #Screen
-   screen = pygame.display.set_mode((TS * 56, TS * 72))
+   screen = pygame.display.set_mode((8 * 56, 8 * 72))
    pygame.display.set_caption("Pato-man")
    #Clock Speed
    clock = pygame.time.Clock()
@@ -106,26 +108,26 @@ def setup(volume,is_gamer):
          screen.fill((0, 0, 0))
          score.display()
          lives.display()
-         screen.blit(background,(0,6*TS))
+         screen.blit(background,(0,6*8))
          consumables.draw(screen) #displays the consumables
-         screen.blit(font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
+         screen.blit(font.render("ready!",False,pygame.Color("yellow")),(8*22,8*40))
 
          for i in range(4):
             if i==Inky:
-               phantom[i].pos=(23*TS,35*TS)
+               phantom[i].pos=(23*8,35*8)
                phantom[i].mode = WAITING
                phantom[i].waiting_movements = -30
                phantom[i].up = True
             elif i==Blinky:
-               phantom[i].pos=(27*TS,28*TS)
+               phantom[i].pos=(27*8,28*8)
                phantom[i].mode=SCATTER
             elif i==Clyde:
-               phantom[i].pos=(31*TS,35*TS)
+               phantom[i].pos=(31*8,35*8)
                phantom[i].mode = WAITING
                phantom[i].waiting_movements = 0
                phantom[i].up = True               
             elif i==Pinky:
-               phantom[i].pos=(27*TS,35*TS)
+               phantom[i].pos=(27*8,35*8)
                phantom[i].mode=LEAVE
             phantom[i].frightened = False
             phantom[i].box = False
@@ -139,23 +141,22 @@ def setup(volume,is_gamer):
             phantom[i].rect.y = phantom[i].pos[1]-Ajuste
             phantom[i].set_image()
             screen.blit(phantom[i].img, (phantom[i].pos[0]-Ajuste, phantom[i].pos[1]-Ajuste))
-         player.pos=(27*TS,52*TS)
+         player.pos=(27*8,52*8)
          player.direct=LEFT
          player.display()
          pygame.display.update()
          pygame.time.wait(2150)
          pygame.mixer.music.unpause()
 
-
       def pause_game():
          running=False
          pygame.mixer.music.pause()
          pygame.mixer.pause()
          
-         pause_screen=pygame.Surface((TS*56,TS*72))
+         pause_screen=pygame.Surface((8*56,8*72))
          pause_screen.set_alpha(100)
          cursor_index=0
-         positions=[(TS*9,TS*28+4),(TS*1,TS*34+4)]
+         positions=[(8*9,8*28+4),(8*1,8*34+4)]
          while not running:
 
             clock.tick(60)
@@ -166,55 +167,61 @@ def setup(volume,is_gamer):
 
                #Directions keys
                if event.type == KEYDOWN:
-                   if event.key == K_ESCAPE:
-                      running=True
-                      pygame.mixer.music.unpause()
-                      pygame.mixer.unpause()
+                  if event.key == K_ESCAPE:
+                     running=True
+                     pygame.mixer.music.unpause()
+                     pygame.mixer.unpause()
 
-                   if event.key == K_RETURN:
+                  if event.key == K_RETURN:
 
-                      if cursor_index==0:
-                         running=True
-                         pygame.mixer.music.unpause()
-                         pygame.mixer.unpause()
-                      else:
-                         go_to_menu()
+                     if cursor_index==0:
+                        running=True
+                        pygame.mixer.music.unpause()
+                        pygame.mixer.unpause()
+                     else:
+                        go_to_menu()
                          
-                   if event.key == K_UP:
-                      cursor_index+=1
-                      if cursor_index==2:
-                         cursor_index=0
+                  if event.key == K_UP:
+                     cursor_index+=1
+                     if cursor_index==2:
+                        cursor_index=0
                       
-                   if event.key == K_DOWN:
-                      cursor_index-=1
-                      if cursor_index==-1:
-                         cursor_index=1
+                  if event.key == K_DOWN:
+                     cursor_index-=1
+                     if cursor_index==-1:
+                        cursor_index=1
 
             screen.fill((0, 0, 0))
             score.display()
             lives.display()
-            screen.blit(background,(0, 6*TS))
+            screen.blit(background,(0, 6*8))
             consumables.draw(screen)
             player.display()  
 
             screen.blit(pause_screen,(0,0))
-            screen.blit(big_font.render("PAUSED",False,pygame.Color("White")),(TS*16,TS*16))
-            screen.blit(big_font.render("continue", False, pygame.Color('White')),(TS*12,TS*28))
-            screen.blit(big_font.render("back to menu", False, pygame.Color('White')),(TS*4,TS*34))
+            screen.blit(big_font.render("PAUSED",False,pygame.Color("White")),(8*16,8*16))
+            screen.blit(big_font.render("continue", False, pygame.Color('White')),(8*12,8*28))
+            screen.blit(big_font.render("back to menu", False, pygame.Color('White')),(8*4,8*34))
             screen.blit(arrow,positions[cursor_index])
 
             pygame.display.update()
+      
       def win_game():
          running=False
          pygame.mixer.music.pause()
          pygame.mixer.pause()
          
-         pause_screen=pygame.Surface((TS*56,TS*72))
+         path=os.path.join(main_dir,"sounds",'win_sound.wav')
+         pygame.mixer.music.load(path)
+         pygame.mixer.music.set_volume(volume)
+         pygame.mixer.music.play(loops=1)
+         
+         pause_screen=pygame.Surface((8*56,8*72))
          pause_screen.set_alpha(100)
          cursor_index=0
-         positions=[(TS*1,TS*34+4)]
+         positions=[(8*1,8*34+4)]
          while not running:
-
+            
             clock.tick(60)
             for event in pygame.event.get():
                #Quit game
@@ -225,19 +232,24 @@ def setup(volume,is_gamer):
                if event.type == KEYDOWN:
                   if event.key == K_RETURN:
                      go_to_menu()
-                     screen.fill((0, 0, 0))
-            
+                     
+            screen.fill((0, 0, 0))
             score.display()
             lives.display()
-            screen.blit(background,(0, 6*TS))
+            screen.blit(background,(0, 6*8))
             consumables.draw(screen)
             player.display() 
-            screen.blit(big_font.render("YOU WIN", False, pygame.Color('Green')),(TS*12,TS*28))
-            screen.blit(big_font.render("back to menu", False, pygame.Color('White')),(TS*4,TS*34))
+            
+            screen.blit(pause_screen,(0,0))
+            screen.blit(big_font.render("YOU WIN", False, pygame.Color('Green')),(8*12,8*28))
+            screen.blit(big_font.render("back to menu", False, pygame.Color('White')),(8*4,8*34))
+            screen.blit(arrow,positions[cursor_index])
 
+            pygame.display.update()
+      
       class Score:
 
-        def __init__(self,current_score,gamer):
+         def __init__(self,current_score,gamer):
             self.score=current_score #starting score
             self.is_gamer=gamer
             self.limit=int(self.score)//10000 + 1
@@ -245,21 +257,21 @@ def setup(volume,is_gamer):
             d = shelve.open(shelve_path)#open high score memory
             self.high_score='00'
             if not self.is_gamer and 'score' in d:
-                self.high_score=d['score'] #Starts as last high value if played before (modo normal)
+               self.high_score=d['score'] #Starts as last high value if played before (modo normal)
             elif self.is_gamer and 'score_gamer' in d:
-                self.high_score=d['score_gamer'] #Starts as last high value if played before (modo gamer)
+               self.high_score=d['score_gamer'] #Starts as last high value if played before (modo gamer)
             d.close() #close high score memory
 
             self.high_score_text=font.render(self.high_score,False,pygame.Color("white")) #makes starter high score text 
             self.score_text=font.render(self.score,False,pygame.Color("white")) #makes starter score text
 
-        def display(self):
+         def display(self):
             screen.blit(font.render("high score",False,pygame.Color("white")),(144,0)) #display "high score" on screen
             screen.blit(self.score_text,(112-16*len(self.score),16)) #display current score on screen
             screen.blit(self.high_score_text,(272-16*len(self.high_score),16)) #display current high score on screen
 
 
-        def add(self,num):
+         def add(self,num):
             new_score=int(self.score)+num
             if new_score>=10000*self.limit:
                lives.add()
@@ -267,16 +279,16 @@ def setup(volume,is_gamer):
                oneup.play() #som de 1up
             self.score=str(new_score) #updates current score
             if int(self.score)>int(self.high_score): #checks if we need new high score
-                d = shelve.open(shelve_path) #open high score memory
-                if not self.is_gamer:
-                    d['score'] = self.score #update high score memory (modo normal)
-                if self.is_gamer:
-                    d['score_gamer'] = self.score #update high score memory (modo gamer)
+               d = shelve.open(shelve_path) #open high score memory
+               if not self.is_gamer:
+                  d['score'] = self.score #update high score memory (modo normal)
+               if self.is_gamer:
+                  d['score_gamer'] = self.score #update high score memory (modo gamer)
 
-                d.close() #close high score memory
-                self.high_score=self.score #gets new high score value
-                self.high_score_text=font.render(self.high_score,False,pygame.Color("white")) #makes new high score text
-
+               d.close() #close high score memory
+               self.high_score=self.score #gets new high score value
+               self.high_score_text=font.render(self.high_score,False,pygame.Color("white")) #makes new high score text
+            
             self.score_text=font.render(self.score,False,pygame.Color("white")) #makes new score text
 
       class Lives:
@@ -296,16 +308,16 @@ def setup(volume,is_gamer):
                screen.fill((0, 0, 0))
                score.display()
                lives.display()
-               screen.blit(background,(0,6*TS))
+               screen.blit(background,(0,6*8))
                consumables.draw(screen)
-               screen.blit(font.render("Game over",False,pygame.Color("red")),(TS*19,TS*40))
+               screen.blit(font.render("Game over",False,pygame.Color("red")),(8*19,8*40))
                pygame.display.update()
                pygame.time.wait(3500)
                go_to_menu()
 
          def display(self):
             for i in range(self.lives):
-               screen.blit(patoAD,(TS+i*32,68*TS+4))
+               screen.blit(patoAD,(8+i*32,68*8+4))
                
             
       class Coins(pygame.sprite.Sprite):
@@ -325,7 +337,7 @@ def setup(volume,is_gamer):
       class Player(pygame.sprite.Sprite):
 
          def __init__(self):
-            self.pos = (27*TS,52*TS)
+            self.pos = (27*8,52*8)
 
             self.direct = LEFT
             self.last_direct = LEFT
@@ -360,16 +372,16 @@ def setup(volume,is_gamer):
          def change_sound(self):
             #change chomp sound
             if self.count:
-                eat1.play()
+               eat1.play()
             else:
-                eat2.play()
+               eat2.play()
             self.count = not self.count
             
          def move(self):
             
             #Try (only one time) to do the memory direction
             if self.change_direct == 1:
-                self.direct = self.memory_direct
+               self.direct = self.memory_direct
 
             if self.direct == UP:
                self.pos = (self.pos[0],self.pos[1]-TS)
@@ -380,30 +392,30 @@ def setup(volume,is_gamer):
             if self.direct == LEFT:
                self.pos=(self.pos[0]-TS,self.pos[1])
                    
-            if self.pos[1] == 34*TS:
-                if self.pos[0] < 0:
-                    self.move_absolute(screen.get_width()-TS,self.pos[1])
-                elif self.pos[0] >= screen.get_width():
-                    self.move_absolute(0,self.pos[1])
+            if self.pos[1] == 34*8:
+               if self.pos[0] < 0:
+                  self.move_absolute(screen.get_width()-TS,self.pos[1])
+               elif self.pos[0] >= screen.get_width():
+                  self.move_absolute(0,self.pos[1])
 
-            if matriz[self.grid_pos()[0]][self.grid_pos()[1]] == 1:
-                if self.direct == UP:
-                    self.pos = (self.pos[0], self.pos[1] + TS)
-                if self.direct == RIGHT:
-                    self.pos = (self.pos[0] - TS, self.pos[1])
-                if self.direct == DOWN:
-                    self.pos = (self.pos[0], self.pos[1] - TS)
-                if self.direct == LEFT:
-                    self.pos = (self.pos[0] + TS, self.pos[1])
+            if matriz[self.pos[1]][self.pos[0]] == 1:
+               if self.direct == UP:
+                  self.pos = (self.pos[0], self.pos[1] + TS)
+               if self.direct == RIGHT:
+                  self.pos = (self.pos[0] - TS, self.pos[1])
+               if self.direct == DOWN:
+                  self.pos = (self.pos[0], self.pos[1] - TS)
+               if self.direct == LEFT:
+                  self.pos = (self.pos[0] + TS, self.pos[1])
 
-                if self.last_direct != self.direct:
+               if self.last_direct != self.direct:
 
-                    #If direction is invalid, memory_direction save it
-                    self.memory_direct = self.direct
-                    self.change_direct += 1
+                  #If direction is invalid, memory_direction save it
+                  self.memory_direct = self.direct
+                  self.change_direct += 1
 
-                    self.direct = self.last_direct
-                    self.move()
+                  self.direct = self.last_direct
+                  self.move()
 
             self.last_direct = self.direct
             self.set_xy()
@@ -413,16 +425,13 @@ def setup(volume,is_gamer):
             self.pos=(x,y)
             self.set_xy()
 
-         def grid_pos(self):
-            return (self.pos[1]//TS,self.pos[0]//TS)
-
          def death(self):
             rotate = pygame.transform.rotate
             for frame in range(-1,7):
                screen.fill((0, 0, 0))
                score.display()
                lives.display()
-               screen.blit(background,(0,6*TS))
+               screen.blit(background,(0,6*8))
                consumables.draw(screen)
                screen.blit(rotate(patoAD,-(frame*90+90)),(self.pos[0]-4,self.pos[1]-4))
                pygame.display.update()
@@ -432,17 +441,17 @@ def setup(volume,is_gamer):
          def set_image(self):
             self.img_index=0
             if self.aberto:
-                self.img_index+=4
+               self.img_index+=4
             if self.direct==RIGHT:
-                self.img_index+=1
+               self.img_index+=1
             elif self.direct==DOWN:
-                self.img_index+=2
+               self.img_index+=2
             elif self.direct==LEFT:
-                self.img_index+=3
+               self.img_index+=3
             self.set_xy()
 
          def display(self):
-           screen.blit(self.imgs[self.img_index],(self.grid_pos()[1]*TS-4,self.grid_pos()[0]*TS-4))
+            screen.blit(self.imgs[self.img_index],(self.pos[0]-4,self.pos[1]-4))
             
          def collision(self):
             
@@ -450,50 +459,50 @@ def setup(volume,is_gamer):
             
             for ghost in phantom_player_collision:
                 
-                if (ghost.mode == EATEN):
-                    continue
-                if (ghost.mode == FRIGHTENED):
+               if (ghost.mode == EATEN):
+                  continue
+               if (ghost.mode == FRIGHTENED):
                     
-                    phantom[ghost.ghost].mode = EATEN
-                    eat_ghost.play()
+                  phantom[ghost.ghost].mode = EATEN
+                  eat_ghost.play()
 
-                    #display everything but pacman and eaten ghost
-                    screen.fill((0, 0, 0))
-                    score.display()
-                    lives.display()
-                    screen.blit(background,(0, 6*TS))                    
-                    consumables.draw(screen)
-                    for i in range(4):
-                       if i!=ghost.ghost:
-                          screen.blit(phantom[i].img, (phantom[i].pos[0]-Ajuste, phantom[i].pos[1]-Ajuste))
-
-                    #display score got
-                    screen.blit(load_img('score'+str(self.eaten_phantom)+'.png'),(ghost.pos[0]-7,ghost.pos[1]))
-                    pygame.display.update()
-
-                    pygame.time.wait(1000)
-
-                    #displays everything normally
-                    screen.fill((0, 0, 0))
-                    score.display()
-                    lives.display()
-                    screen.blit(background,(0, 6*TS))                    
-                    consumables.draw(screen)
-                    for i in range(4):
+                  #display everything but pacman and eaten ghost
+                  screen.fill((0, 0, 0))
+                  score.display()
+                  lives.display()
+                  screen.blit(background,(0, 6*8))                    
+                  consumables.draw(screen)
+                  for i in range(4):
+                     if i!=ghost.ghost:
                         screen.blit(phantom[i].img, (phantom[i].pos[0]-Ajuste, phantom[i].pos[1]-Ajuste))
-                    self.display()
-                    pygame.display.update()
+
+                  #display score got
+                  screen.blit(load_img('score'+str(self.eaten_phantom)+'.png'),(ghost.pos[0]-7,ghost.pos[1]))
+                  pygame.display.update()
+
+                  pygame.time.wait(1000)
+
+                  #displays everything normally
+                  screen.fill((0, 0, 0))
+                  score.display()
+                  lives.display()
+                  screen.blit(background,(0, 6*8))                    
+                  consumables.draw(screen)
+                  for i in range(4):
+                     screen.blit(phantom[i].img, (phantom[i].pos[0]-Ajuste, phantom[i].pos[1]-Ajuste))
+                  self.display()
+                  pygame.display.update()
                     
-                    phantom[ghost.ghost].box = False
-                    score.add(200 * (2 ** self.eaten_phantom))
-                    self.eaten_phantom += 1
-                else:
-                    pygame.mixer.music.pause()
-                    pygame.time.wait(750)
-                    death.play()
-                    self.death() #death animation
-                    lives.remove()
-                    reset()
+                  phantom[ghost.ghost].box = False
+                  score.add(200 * (2 ** self.eaten_phantom))
+                  self.eaten_phantom += 1
+               else:
+                  pygame.mixer.music.pause()
+                  pygame.time.wait(750)
+                  death.play()
+                  self.death() #death animation
+                  lives.remove()
+                  reset()
 
       #Stage 1 matrix. Holds information on active game state
       #State 0 --> Empty
@@ -520,30 +529,30 @@ def setup(volume,is_gamer):
       score = Score(current_score,is_gamer)
       lives = Lives(current_lives,is_gamer)
 
-       #Create the sprites of coins and powers and put them in the respective groups
+      #Create the sprites of coins and powers and put them in the respective groups
       for i in range(len(matriz)):
          for j in range(len(matriz[0])):
             coins = Coins()
             power = Power()
 
             if (matriz[i][j] == 2):
-                coins.rect.x = j * TS
-                coins.rect.y = i * TS
-                consumables.add(coins)
+               coins.rect.x = j
+               coins.rect.y = i
+               consumables.add(coins)
 
             if (matriz[i][j] == 3):
-                power.rect.x = j * TS
-                power.rect.y = i * TS
-                consumables.add(power)
+               power.rect.x = j
+               power.rect.y = i
+               consumables.add(power)
 
       #Inital screen appearence
       screen.fill((0, 0, 0))
       score.display()
       lives.display()
-      screen.blit(background,(0,6*TS))
+      screen.blit(background,(0,6*8))
       consumables.draw(screen) #displays the consumables
-      screen.blit(font.render("ready!",False,pygame.Color("yellow")),(TS*22,TS*40))
-      screen.blit(font.render("player one",False,pygame.Color("cyan")),(TS*18,TS*28))
+      screen.blit(font.render("ready!",False,pygame.Color("yellow")),(8*22,8*40))
+      screen.blit(font.render("player one",False,pygame.Color("cyan")),(8*18,8*28))
       pygame.display.update()
 
       #Plays the beginning sound
@@ -551,7 +560,7 @@ def setup(volume,is_gamer):
       pygame.time.wait(2150)
 
       #initial screen appearence 2
-      screen.blit(background,(0,6*TS))
+      screen.blit(background,(0,6*8))
       consumables.draw(screen) #displays the consumables
       for i in range(4):#displays ghosts       
          screen.blit(phantom[i].img, (phantom[i].pos[0] - Ajuste, phantom[i].pos[1] - Ajuste))
@@ -568,166 +577,173 @@ def setup(volume,is_gamer):
       player_time=0
 
       while running:
-           clock.tick(20)
+            
+         clock.tick()
            
-           for event in pygame.event.get():
+         for event in pygame.event.get():
 
-               #Quit game
-               if event.type == pygame.QUIT:
-                   running = False
-                   pygame.quit()
+            #Quit game
+            if event.type == pygame.QUIT:
+               running = False
+               pygame.quit()
 
-               #Directions keys
-               if event.type == KEYDOWN:
-                   player.change_direct = 0 #If key is used, memory_direction has to update
-                   if event.key == K_UP:
-                       player.direct = UP
-                   if event.key == K_DOWN:
-                       player.direct = DOWN
-                   if event.key == K_LEFT:
-                       player.direct = LEFT
-                   if event.key == K_RIGHT:
-                       player.direct = RIGHT
-                   if event.key == K_ESCAPE:
-                      pause_game()
+            #Directions keys
+            if event.type == KEYDOWN:
+               player.change_direct = 0 #If key is used, memory_direction has to update
+               if event.key == K_UP:
+                  player.direct = UP
+               if event.key == K_DOWN:
+                  player.direct = DOWN
+               if event.key == K_LEFT:
+                  player.direct = LEFT
+               if event.key == K_RIGHT:
+                  player.direct = RIGHT
+               if event.key == K_ESCAPE:
+                  pause_game()
 
-           #Handles player movement
-           player.time+=player.speed
-           if player.time>=100:
-              player.time=player.time%100
-              player.move()
-              #changes pato-man's mouth animation
-              player.aberto=not player.aberto
+         #Handles player movement
+         player.time+=player.speed
+         if player.time>=100:
+            for qtd in range(player.time // 100):
+               player.move()
+            
+            player.time=player.time%100
+            #changes pato-man's mouth animation
+            player.aberto=not player.aberto
 
-           for i in range(4):
-              phantom[i].time+=phantom[i].speed
-              if phantom[i].time>=100:
-                 for j in range(phantom[i].time//100):
-                    phantom[i].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
-                 phantom[i].time=phantom[i].time%100
-           #If after .move() memory_direction failed or not
-           if player.change_direct == 2:
-               player.change_direct = 1
+         for i in range(4):
+            phantom[i].time+=phantom[i].speed
+            if phantom[i].time>=100:
+               for j in range(phantom[i].time//100):
+                  phantom[i].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
+               phantom[i].time=phantom[i].time%100
+         #If after .move() memory_direction failed or not
+         if player.change_direct == 2:
+            player.change_direct = 1
 
-           #pato-man eats a normal pellet
-           if matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 2:
+         #pato-man eats a normal pellet
+         if matriz[player.pos[1]][player.pos[0]] == 2:
 
-               for coins in consumables: #Search the atual coins in coins_list
-                   if coins.rect.x == player.grid_pos()[1] * TS and coins.rect.y == player.grid_pos()[0] * TS:
-                       coins.kill() #Remove from all groups
-                       break
-               matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
-               score.add(10)
+            for coins in consumables: #Search the atual coins in coins_list
+               if coins.rect.x == player.pos[0] and coins.rect.y == player.pos[1]:
+                  coins.kill() #Remove from all groups
+                  break
+            matriz[player.pos[1]][player.pos[0]] = 0
+            score.add(10)
 
-               player.change_sound()
+            player.change_sound()
 
-           #Pato-man eats a power pellet
-           elif matriz[player.grid_pos()[0]][player.grid_pos()[1]] == 3:
+         #Pato-man eats a power pellet
+         elif matriz[player.pos[1]][player.pos[0]] == 3:
 
-               player.eaten_phantom=0#keeps track of currently eaten ghosts
+            player.eaten_phantom=0#keeps track of currently eaten ghosts
 
-               for i in range(4):
-                  if i==Inky or i==Clyde:
-                     if (phantom[i].mode != EATEN):
-                         if(phantom[i].mode == WAITING or phantom[i].mode == LEAVE):
-                             phantom[i].frightened = True
-                         else:
-                             if(phantom[i].mode != FRIGHTENED):
-                                 phantom[i].change_direct()
-                             phantom[i].mode = FRIGHTENED
-                         phantom[i].moviments = 0
-                  else:
-                     #update ghots' state
-                     if (phantom[i].mode != EATEN):
-                         if(phantom[i].mode == LEAVE):
-                             phantom[i].frightened = True
-                         else:
-                             if(phantom[i].mode != FRIGHTENED):
-                                 phantom[i].change_direct()
-                             phantom[i].mode = FRIGHTENED
-                         phantom[i].moviments = 0
+            for i in range(4):
+               if i==Inky or i==Clyde:
+                  if (phantom[i].mode != EATEN):
+                     if(phantom[i].mode == WAITING or phantom[i].mode == LEAVE):
+                        phantom[i].frightened = True
+                     else:
+                        if(phantom[i].mode != FRIGHTENED):
+                           phantom[i].change_direct()
+                        phantom[i].mode = FRIGHTENED
+                        phantom[i].reset_time()
+               else:
+                  #update ghots' state
+                  if (phantom[i].mode != EATEN):
+                     if(phantom[i].mode == LEAVE):
+                        phantom[i].frightened = True
+                     else:
+                        if(phantom[i].mode != FRIGHTENED):
+                           phantom[i].change_direct()
+                        phantom[i].mode = FRIGHTENED
+                     phantom[i].reset_time()
                
-               for power in consumables: #Search the atual power in power_list
-                   if power.rect.x == player.grid_pos()[1] * TS and power.rect.y == player.grid_pos()[0] * TS:
-                       power.kill() #Remove from all groups
-                       break
-               matriz[player.grid_pos()[0]][player.grid_pos()[1]] = 0
-               score.add(50)
+            for power in consumables: #Search the atual power in power_list
+               if power.rect.x == player.pos[0] * TS and power.rect.y == player.pos[1] * TS:
+                  power.kill() #Remove from all groups
+                  break
+            matriz[player.pos[1]][player.pos[0]] = 0
+            score.add(50)
 
-               player.change_sound()
+            player.change_sound()
                
-           #music handler
-           #------------------------------------------
-           if (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED):
-               player.speed=player.fast_speed
-               if now_music!='power.wav' and now_music!='eyes.wav':
-                  now_music='power.wav'
-                  play_music('power.wav',volume)
+         #music handler
+         #------------------------------------------
+         if (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED or phantom[Blinky].frightened or phantom[Inky  ].frightened or phantom[Clyde ].frightened or phantom[Pinky ].frightened):
+            player.speed=player.fast_speed
+            if now_music!='power.wav' and now_music!='eyes.wav':
+               now_music='power.wav'
+               play_music('power.wav',volume)
 
-           if (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN):
-               if now_music!='eyes.wav':
-                  now_music='eyes.wav'
-                  play_music('eyes.wav',volume)
-           elif now_music=='eyes.wav' and not (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN):
-              now_music=''
+         if (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN):
+            if now_music!='eyes.wav':
+               now_music='eyes.wav'
+               play_music('eyes.wav',volume)
+         elif now_music=='eyes.wav' and not (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN):
+            now_music=''
 
-           if not (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED) and not (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN or phantom[Blinky].frightened or phantom[Inky  ].frightened or phantom[Clyde ].frightened or phantom[Pinky ].frightened):
-               player.speed=player.normal_speed
-               if now_music!=level_music:
-                  now_music=level_music
-                  play_music(level_music,volume)
+         if not (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED) and not (phantom[Blinky].mode == EATEN or phantom[Inky  ].mode == EATEN or phantom[Clyde ].mode == EATEN or phantom[Pinky ].mode == EATEN or phantom[Blinky].frightened or phantom[Inky  ].frightened or phantom[Clyde ].frightened or phantom[Pinky ].frightened):
+            player.speed=player.normal_speed
+            if now_music!=level_music:
+               now_music=level_music
+               play_music(level_music,volume)
 
-           if len(consumables)==144:
-              level_music = 'music2.wav'
+         if len(consumables)==144:
+            level_music = 'music2.wav'
 
-           if len(consumables)==83:
-              level_music = 'music3.wav'
+         if len(consumables)==83:
+            level_music = 'music3.wav'
 
-           if len(consumables)==27:
-              level_music = 'music4.wav'
-           #------------------------------------------
+         if len(consumables)==27:
+            level_music = 'music4.wav'
+         #------------------------------------------
 
-           #goes back to menu when level is finished
-           if len(consumables)==0:
-              play_music('win_sound.wav',volume)
+         #goes back to menu when level is finished
+         if len(consumables)==0:
+            play_music('win_sound.wav',volume)
 
-              for frame in range(10):
-                if frame==5:
-                   play_music('win_sound.wav',volume)
+            for frame in range(10):
+               if frame==5:
+                  play_music('win_sound.wav',volume)
                
-                screen.fill((0,0,0))
-                score.display()
-                lives.display()
-                player.display()
-                screen.blit(background_white, (0, 6 * TS))
-                pygame.display.update()
-                pygame.time.wait(100)
+               screen.fill((0,0,0))
+               score.display()
+               lives.display()
+               player.display()
+               screen.blit(background_white, (0, 6 * 8))
+               pygame.display.update()
+               pygame.time.wait(100)
 
-                screen.fill((0,0,0))
-                score.display()
-                lives.display()
-                player.display()
-                screen.blit(background_open, (0, 6 * TS))
-                pygame.display.update()
-                pygame.time.wait(100)
-              nonlocal index
-              index+=1
-              if index==len(levels):
-                 break
-              game(lives.lives,score.score,player_speed=levels[index][0],ghost_speed=levels[index][1],is_gamer=levels[index][2])
-              break
-           #Display objects on screen
-           screen.fill((0, 0, 0))
-           score.display()
-           lives.display()
-           screen.blit(background,(0, 6*TS))  
-           #Display coins and powers on screen
-           consumables.draw(screen)
-           for i in range(4):         
-              screen.blit(phantom[i].img, (phantom[i].pos[0]-Ajuste, phantom[i].pos[1]-Ajuste))
-           player.display()
-           player.collision()
-           pygame.display.update()
+               screen.fill((0,0,0))
+               score.display()
+               lives.display()
+               player.display()
+               screen.blit(background_open, (0, 6 * 8))
+               pygame.display.update()
+               pygame.time.wait(100)
+            nonlocal index
+            index+=1
+            if index==len(levels):
+               win_game()
+               pygame.time.wait(400)
+               break
+              
+            game(current_lives = lives.lives,current_score=score.score,player_normal_speed=levels[index][0],player_fast_speed=levels[index][1],ghost_normal_speed=levels[index][2],ghost_slow_speed=levels[index][3],is_gamer=levels[index][4])
+            break
+         #Display objects on screen
+         screen.fill((0, 0, 0))
+         score.display()
+         lives.display()
+         screen.blit(background,(0, 6*8))  
+         #Display coins and powers on screen
+         consumables.draw(screen)
+         for i in range(4):         
+            screen.blit(phantom[i].img, (phantom[i].pos[0]-Ajuste, phantom[i].pos[1]-Ajuste))
+         player.display()
+         player.collision()
+         pygame.display.update()
+
 
    index=0
    if is_gamer:
@@ -736,8 +752,8 @@ def setup(volume,is_gamer):
    else:
       levels=[[80,90,75,50,False],[90,95,85,55,False],[90,95,85,55,False],[90,95,85,55,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False]]
       game(current_lives=3,current_score='00',player_normal_speed=levels[index][0],player_fast_speed=levels[index][1],ghost_normal_speed=levels[index][2],ghost_slow_speed=levels[index][3],is_gamer=levels[index][4])
-   win_game()
-      
+   
+   #victory screen   
    go_to_menu()
       
 if __name__=='__main__':

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Pato-man",
-    version="0.8",
+    version="0.9",
     author="Abraão Caiana de Freitas",
     author_email="abraao.freitas@ccc.ufcg.edu.br",
     description="Pac-man with ducks",
