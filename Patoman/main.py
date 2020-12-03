@@ -204,7 +204,37 @@ def setup(volume,is_gamer):
             screen.blit(arrow,positions[cursor_index])
 
             pygame.display.update()
+      def win_game():
+         running=False
+         pygame.mixer.music.pause()
+         pygame.mixer.pause()
          
+         pause_screen=pygame.Surface((TS*56,TS*72))
+         pause_screen.set_alpha(100)
+         cursor_index=0
+         positions=[(TS*1,TS*34+4)]
+         while not running:
+
+            clock.tick(60)
+            for event in pygame.event.get():
+               #Quit game
+               if event.type == pygame.QUIT:
+                  pygame.quit()
+
+               #Directions keys
+               if event.type == KEYDOWN:
+                  if event.key == K_RETURN:
+                     go_to_menu()
+                     screen.fill((0, 0, 0))
+            
+            score.display()
+            lives.display()
+            screen.blit(background,(0, 6*TS))
+            consumables.draw(screen)
+            player.display() 
+            screen.blit(big_font.render("YOU WIN", False, pygame.Color('Green')),(TS*12,TS*28))
+            screen.blit(big_font.render("back to menu", False, pygame.Color('White')),(TS*4,TS*34))
+
       class Score:
 
         def __init__(self,current_score,gamer):
@@ -701,12 +731,12 @@ def setup(volume,is_gamer):
 
    index=0
    if is_gamer:
-      levels=[[100,90,150,100,True],[100,90,150,100,True]]
+      levels=[[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True]]
       game(current_lives=1,current_score='00',player_normal_speed=levels[index][0],player_fast_speed=levels[index][1],ghost_normal_speed=levels[index][2],ghost_slow_speed=levels[index][3],is_gamer=levels[index][4])
    else:
-      levels=[[80,90,75,50,False],[80,90,75,50,False]]
+      levels=[[80,90,75,50,False],[90,95,85,55,False],[90,95,85,55,False],[90,95,85,55,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False]]
       game(current_lives=3,current_score='00',player_normal_speed=levels[index][0],player_fast_speed=levels[index][1],ghost_normal_speed=levels[index][2],ghost_slow_speed=levels[index][3],is_gamer=levels[index][4])
-   #victory screen
+   win_game()
       
    go_to_menu()
       
