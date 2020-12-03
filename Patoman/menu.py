@@ -20,6 +20,13 @@ def load_font(name,size):
    path=os.path.join(main_dir,"fonts",name)
    return pygame.font.Font(path,size)
 
+def play_music(name,volume):
+   path=os.path.join(main_dir,"sounds",name)
+   pygame.mixer.music.load(path)
+   pygame.mixer.music.set_volume(volume)
+   pygame.mixer.music.play(loops=-1)
+
+
 def run():
    
    pygame.init() #initializing pygame
@@ -37,7 +44,7 @@ def run():
    RIGHT = 3
    STOP  = 4
 
-   #loading resources
+   #loading images
    patoFC = load_img('patoFC.png')
    patoFD = load_img('patoFD.png')
    patoFB = load_img('patoFB.png')
@@ -201,7 +208,7 @@ def run():
    start_menu = False
    settings_menu = False
    credits_menu = False
-   
+   play_music('menu_music.wav',game_volume/200)
    while True:
        clock.tick(15)
 
@@ -235,9 +242,9 @@ def run():
 
                        elif menu.type == "Start Menu":
                            if cursor.pos() == menu.positions[0]:   #start level 1
-                               level1.game(game_volume/200,game_speed=15,diff="easy")
+                               level1.setup(game_volume/200,False)
                            elif cursor.pos() == menu.positions[1]: #start level 1
-                               level1.game(game_volume/200,game_speed=30,diff="hard")
+                               level1.setup(game_volume/200,True)
                            elif cursor.pos() == menu.positions[2]: #return buttom
                                menu = Main_Menu()
                            cursor.index = 0 #reinitialize cursor in the main menu on the right position
@@ -259,6 +266,7 @@ def run():
        animation.animate() #Shows duck animation
        cursor.move() #Moves cursor
        cursor.display() #Displays cursor
+       pygame.mixer.music.set_volume(game_volume/200)#update menu song volume
 
        if main_menu == True:
            menu.display() #Displays menu
