@@ -1,4 +1,7 @@
-matriz = open("matriz.txt", "r")
+import os
+
+main_dir = os.path.split(os.path.abspath(__file__))[0]
+matriz = open(os.path.join(main_dir,"matriz.txt"), "r")
 
 Matriz = [[]]
 i = 0
