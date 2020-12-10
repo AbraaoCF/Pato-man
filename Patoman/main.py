@@ -3,9 +3,9 @@ import os
 from pygame.locals import *
 import shelve
 import time
-from Patoman import Matriz
-from Patoman import menu
-from Patoman import Ghost
+import Matriz
+import menu
+import Ghost
 
 
 main_dir = os.path.split(os.path.abspath(__file__))[0]
@@ -504,6 +504,55 @@ def setup(volume,is_gamer):
                   lives.remove()
                   reset()
 
+         def collision_CP(self):
+           #pato-man eats a normal pellet
+            if matriz[self.pos[1]][self.pos[0]] == 2:
+                for coins in consumables: #Search the atual coins in coins_list
+                    if coins.rect.x == player.pos[0] and coins.rect.y == player.pos[1]:
+                        coins.kill() #Remove from all groups
+                        break
+                   
+                matriz[self.pos[1]][self.pos[0]] = 0
+                score.add(10)
+                   
+                player.change_sound()
+
+            #Pato-man eats a power pellet
+            elif matriz[self.pos[1]][self.pos[0]] == 3:
+               player.eaten_phantom=0#keeps track of currently eaten ghosts
+               for i in range(4):
+                   if i==Inky or i==Clyde:
+                       if (phantom[i].mode != EATEN):
+                           if(phantom[i].mode == WAITING or phantom[i].mode == LEAVE):
+                               phantom[i].frightened = True
+                           else:
+                               if(phantom[i].mode != FRIGHTENED):
+                                   phantom[i].change_direct()
+                                   phantom[i].mode = FRIGHTENED
+                                   phantom[i].reset_time()
+                   else:
+                        #update ghots' state
+                        if (phantom[i].mode != EATEN):
+                            if(phantom[i].mode == LEAVE):
+                                phantom[i].frightened = True
+                            else:
+                                if(phantom[i].mode != FRIGHTENED):
+                                    phantom[i].change_direct()
+                                    phantom[i].mode = FRIGHTENED
+                                    
+                            phantom[i].reset_time()
+                               
+               for power in consumables: #Search the atual power in power_list
+                  if power.rect.x == player.pos[0] * TS and power.rect.y == player.pos[1] * TS:
+                     power.kill() #Remove from all groups
+                     break
+               
+               matriz[self.pos[1]][self.pos[0]] = 0
+               score.add(50)
+
+               player.change_sound()
+
+
       #Stage 1 matrix. Holds information on active game state
       #State 0 --> Empty
       #State 1 --> Wall
@@ -597,77 +646,32 @@ def setup(volume,is_gamer):
                if event.key == K_LEFT:
                   player.direct = LEFT
                if event.key == K_RIGHT:
-                  player.direct = RIGHT
+                   player.direct = RIGHT
                if event.key == K_ESCAPE:
                   pause_game()
 
          #Handles player movement
          player.time+=player.speed
-         if player.time>=100:
-            for qtd in range(player.time // 100):
-               player.move()
-            
-            player.time=player.time%100
-            #changes pato-man's mouth animation
-            player.aberto=not player.aberto
+         for qtd in range((player.time // 100) * 2):
+            player.move()
+            player.collision_CP()
+        
+         player.time=player.time%100
+         #changes pato-man's mouth animation
+         player.aberto=not player.aberto
 
          for i in range(4):
             phantom[i].time+=phantom[i].speed
             if phantom[i].time>=100:
-               for j in range(phantom[i].time//100):
+               for j in range((phantom[i].time//100) * 2):
                   phantom[i].move(player.pos[1] // TS, player.pos[0] // TS, player.direct, 0, 0, 0)
                phantom[i].time=phantom[i].time%100
          #If after .move() memory_direction failed or not
          if player.change_direct == 2:
             player.change_direct = 1
 
-         #pato-man eats a normal pellet
-         if matriz[player.pos[1]][player.pos[0]] == 2:
-
-            for coins in consumables: #Search the atual coins in coins_list
-               if coins.rect.x == player.pos[0] and coins.rect.y == player.pos[1]:
-                  coins.kill() #Remove from all groups
-                  break
-            matriz[player.pos[1]][player.pos[0]] = 0
-            score.add(10)
-
-            player.change_sound()
-
-         #Pato-man eats a power pellet
-         elif matriz[player.pos[1]][player.pos[0]] == 3:
-
-            player.eaten_phantom=0#keeps track of currently eaten ghosts
-
-            for i in range(4):
-               if i==Inky or i==Clyde:
-                  if (phantom[i].mode != EATEN):
-                     if(phantom[i].mode == WAITING or phantom[i].mode == LEAVE):
-                        phantom[i].frightened = True
-                     else:
-                        if(phantom[i].mode != FRIGHTENED):
-                           phantom[i].change_direct()
-                        phantom[i].mode = FRIGHTENED
-                        phantom[i].reset_time()
-               else:
-                  #update ghots' state
-                  if (phantom[i].mode != EATEN):
-                     if(phantom[i].mode == LEAVE):
-                        phantom[i].frightened = True
-                     else:
-                        if(phantom[i].mode != FRIGHTENED):
-                           phantom[i].change_direct()
-                        phantom[i].mode = FRIGHTENED
-                     phantom[i].reset_time()
-               
-            for power in consumables: #Search the atual power in power_list
-               if power.rect.x == player.pos[0] * TS and power.rect.y == player.pos[1] * TS:
-                  power.kill() #Remove from all groups
-                  break
-            matriz[player.pos[1]][player.pos[0]] = 0
-            score.add(50)
-
-            player.change_sound()
-               
+         player.collision_CP()
+   
          #music handler
          #------------------------------------------
          if (phantom[Blinky].mode == FRIGHTENED or phantom[Inky  ].mode == FRIGHTENED or phantom[Clyde ].mode == FRIGHTENED or phantom[Pinky ].mode == FRIGHTENED or phantom[Blinky].frightened or phantom[Inky  ].frightened or phantom[Clyde ].frightened or phantom[Pinky ].frightened):
@@ -747,10 +751,10 @@ def setup(volume,is_gamer):
 
    index=0
    if is_gamer:
-      levels=[[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True],[100,90,150,100,True]]
+      levels=[[100,90,130,90,True],[100,90,130,90,True],[100,90,130,90,True],[100,90,130,100,True],[100,90,130,90,True],[100,90,130,90,True],[100,90,130,90,True],[100,90,130,90,True],[100,90,130,90,True]]
       game(current_lives=1,current_score='00',player_normal_speed=levels[index][0],player_fast_speed=levels[index][1],ghost_normal_speed=levels[index][2],ghost_slow_speed=levels[index][3],is_gamer=levels[index][4])
    else:
-      levels=[[80,90,75,50,False],[90,95,85,55,False],[90,95,85,55,False],[90,95,85,55,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False],[100,100,95,60,False]]
+      levels=[[60,65,62,50,False],[60,65,62,50,False],[60,65,55,50,False],[60,65,55,50,False],[65,75,65,60,False],[65,75,65,60,False],[65,75,65,60,False],[65,75,65,60,False],[65,75,65,60,False],[65,75,65,60,False]]
       game(current_lives=3,current_score='00',player_normal_speed=levels[index][0],player_fast_speed=levels[index][1],ghost_normal_speed=levels[index][2],ghost_slow_speed=levels[index][3],is_gamer=levels[index][4])
    
    #victory screen   
