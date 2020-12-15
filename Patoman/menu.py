@@ -34,8 +34,8 @@ def run():
        pygame.mixer.init()
 
    # Limitations (inclusive) for menu options:
-   #top: TS*32 bottom: TS*66
-   #left: TS*4 right: TS*50
+   #top: 256 bottom: 528
+   #left: 32 right: 400
 
    #Directions
    UP    = 0
@@ -57,9 +57,8 @@ def run():
    
    font=load_font("emulogic.ttf",16)
    font_menu=load_font("emulogic.ttf",32)
-   TS=8 #setting the size in pixels of a tile
 
-   screen = pygame.display.set_mode((TS * 56, TS * 72)) #sets screen size
+   screen = pygame.display.set_mode((448, 576)) #sets screen size
    pygame.display.set_caption("Pato-man") #sets screen title
 
    clock = pygame.time.Clock() #create clock object
@@ -79,124 +78,125 @@ def run():
 
    class Main_Menu():
 
-       def __init__(self):
-           self.size = 3
-           self.type = "Main Menu"
-           self.positions=[(TS*15,TS*38+4),(TS*9,TS*44+4),(TS*12,TS*50+4),(TS*16,TS*56+4)]
-
-       def display(self):
-           screen.blit(font_menu.render("Start", False, pygame.Color('White')),(TS*19,TS*38))
-           screen.blit(font_menu.render("Settings", False, pygame.Color('White')),(TS*13,TS*44))
-           screen.blit(font_menu.render("Credits", False, pygame.Color('White')),(TS*15,TS*50))
-           screen.blit(font_menu.render("Quit", False, pygame.Color('White')),(TS*20,TS*56))
+      def __init__(self):
+         self.size = 3
+         self.type = "Main Menu"
+         self.positions=[(120,308),(72,356),(96,404),(128,452)]
+     
+      def display(self):
+         screen.blit(font_menu.render("Start", False, pygame.Color('White')),(152,304))
+         screen.blit(font_menu.render("Settings", False, pygame.Color('White')),(104,352))
+         screen.blit(font_menu.render("Credits", False, pygame.Color('White')),(120,400))
+         screen.blit(font_menu.render("Quit", False, pygame.Color('White')),(160,448))
 
    class Start_Menu():
 
-       def __init__(self):
-           self.size = 2
-           self.type = "Start Menu"
-           self.positions = [(TS*3,TS*41+4),(TS*4,TS*47+4),(TS*13,TS*53+4)]
+      def __init__(self):
+         self.size = 2
+         self.type = "Start Menu"
+         self.positions = [(24,332),(32,380),(104,428)]
 
-       def display(self):
-           screen.blit(font_menu.render("Normal Mode", False, pygame.Color('White')),(TS*7,TS*41))
-           screen.blit(font_menu.render("Gamer Mode", False, pygame.Color('White')),(TS*8,TS*47))
-           screen.blit(font_menu.render("Return", False, pygame.Color('White')),(TS*17,TS*53))
+      def display(self):
+         screen.blit(font_menu.render("Normal Mode", False, pygame.Color('White')),(56,328))
+         screen.blit(font_menu.render("Gamer Mode", False, pygame.Color('White')),(64,376))
+         screen.blit(font_menu.render("Return", False, pygame.Color('White')),(136,424))
 
    class Settings_Menu():
 
-       def __init__(self):
-           self.size = 1
-           self.type = "Settings Menu"
-           self.positions = [(TS*7,TS*44+4),(TS*13,TS*50+4)]
+      def __init__(self):
+         self.size = 1
+         self.type = "Settings Menu"
+         self.positions = [(56,356),(104,404)]
 
-       def display(self):
-           global game_volume
-           screen.blit(font_menu.render("Volume", False, pygame.Color('White')),(TS*11,TS*44))
-           screen.blit(font_menu.render(str(game_volume), False, pygame.Color('White')),(300,TS*44))
-           screen.blit(font_menu.render("Return", False, pygame.Color('White')),(TS*17,TS*50))
+      def display(self):
+         global game_volume
+         screen.blit(font_menu.render("Volume", False, pygame.Color('White')),(88,352))
+         screen.blit(font_menu.render(str(game_volume), False, pygame.Color('White')),(300,352))
+         screen.blit(font_menu.render("Return", False, pygame.Color('White')),(136,400))
 
    class Credits_Menu():
 
-       def __init__(self):
-           self.size = 0
-           self.type = "Credits Menu"
-           self.positions = [(TS*19,490)]
+      def __init__(self):
+         self.size = 0
+         self.type = "Credits Menu"
+         self.positions = [(152,490)]
 
-       def display(self):
-           screen.blit(font.render("This game was made as a", False, pygame.Color('White')),(TS*4,288))
-           screen.blit(font.render("college project for UFCG", False, pygame.Color('White')),(TS*4,304))
-           screen.blit(font.render("Developers:", False, pygame.Color('White')),(TS*4,336))
-           screen.blit(font.render("Abraao Caiana de Freitas", False, pygame.Color('White')),(TS*4,368))
-           screen.blit(font.render("Augusto Nunes Zacarias", False, pygame.Color('White')),(TS*4,400))
-           screen.blit(font.render("Davi Henrique Silva", False, pygame.Color('White')),(TS*4,432))
-           screen.blit(font.render("Joao Gabriel Abrantes", False, pygame.Color('White')),(TS*4,464))
+      def display(self):
+         screen.blit(font.render("This game was made as a", False, pygame.Color('White')),(32,288))
+         screen.blit(font.render("college project for UFCG", False, pygame.Color('White')),(32,304))
+         screen.blit(font.render("Developers:", False, pygame.Color('White')),(32,336))
+         screen.blit(font.render("Abraao Caiana de Freitas", False, pygame.Color('White')),(32,368))
+         screen.blit(font.render("Augusto Nunes Zacarias", False, pygame.Color('White')),(32,400))
+         screen.blit(font.render("Davi Henrique Silva", False, pygame.Color('White')),(32,432))
+         screen.blit(font.render("Joao Gabriel Abrantes", False, pygame.Color('White')),(32,464))
          
-           screen.blit(font.render("Return", False, pygame.Color('White')),(TS*23,496))
+         screen.blit(font.render("Return", False, pygame.Color('White')),(184,496))
 
    class Cursor():
        
-       def __init__(self):
-           self.image = arrow
-           self.index = 0
-           self.direction = STOP
-           self.size_menu = 3
+      def __init__(self):
+         self.image = arrow
+         self.index = 0
+         self.direction = STOP
+         self.size_menu = 3
 
-       def move(self):
-           global game_volume
-           self.size_menu=menu.size
-           if pygame.mixer.get_init():
-               pygame.mixer.stop()
-           if self.direction == RIGHT:
-              if menu.type=="Settings Menu" and self.pos()==menu.positions[0]:
-                 if game_volume<100:
-                    game_volume+=10
-           elif self.direction == LEFT:
-              if menu.type=="Settings Menu" and self.pos()==menu.positions[0]:
-                 if game_volume>0:
-                    game_volume-=10
-           elif self.direction == DOWN:
-               if self.index == self.size_menu:
-                   self.index = 0
-               else:
-                   self.index += 1
-           elif self.direction == UP:
-               if self.index == 0:
-                   self.index = self.size_menu
-               else:
-                   self.index -= 1
+      def move(self):
+         global game_volume
+         self.size_menu=menu.size
+         if pygame.mixer.get_init():
+            pygame.mixer.stop()
+         if self.direction == RIGHT:
+            if menu.type=="Settings Menu" and self.pos()==menu.positions[0]:
+               if game_volume<100:
+                  game_volume+=10
+         elif self.direction == LEFT:
+            if menu.type=="Settings Menu" and self.pos()==menu.positions[0]:
+               if game_volume>0:
+                  game_volume-=10
+         elif self.direction == DOWN:
+            if self.index == self.size_menu:
+               self.index = 0
+            else:
+               self.index += 1
+         elif self.direction == UP:
+            if self.index == 0:
+               self.index = self.size_menu
+            else:
+               self.index -= 1
 
-           self.direction = STOP
-       def pos(self):
-           return menu.positions[self.index]
+         self.direction = STOP
+       
+      def pos(self):
+         return menu.positions[self.index]
 
-       def display(self):
-           screen.blit(self.image,self.pos())
+      def display(self):
+         screen.blit(self.image,self.pos())
        
    class Animation():
 
-       def __init__(self):
-           self.pos=(TS*1,TS*29) #starting postion
-           self.img=patoAD #starting image
-           self.aberto=True #Variable to make mouth open and close
+      def __init__(self):
+         self.pos=(8,232) #starting postion
+         self.img=patoAD #starting image
+         self.aberto=True #Variable to make mouth open and close
 
-       def animate(self):
-           self.aberto=not self.aberto 
-           screen.blit(self.img,self.pos)
-           if self.pos[1]==TS*67 and TS*2<=self.pos[0]<=TS*52:
-               self.img=patoAE if self.aberto else patoFE
-               self.pos=(self.pos[0]-TS,self.pos[1]) #moves left
+      def animate(self):
+         self.aberto=not self.aberto 
+         screen.blit(self.img,self.pos)
+         if self.pos[1]==536 and 10<=self.pos[0]<=416:
+            self.img=patoAE if self.aberto else patoFE
+            self.pos=(self.pos[0]-2,self.pos[1]) #moves left
 
-           elif self.pos[0]==TS*52 and TS*66>=self.pos[1]>=TS*29:
-               self.img=patoAB if self.aberto else patoFB
-               self.pos=(self.pos[0],self.pos[1]+TS) #moves down
+         elif self.pos[0]==416 and 534>=self.pos[1]>=232:
+            self.img=patoAB if self.aberto else patoFB
+            self.pos=(self.pos[0],self.pos[1]+2) #moves down
 
-           elif self.pos[1]==TS*29 and TS*51>=self.pos[0]>=TS*1:
-               self.img=patoAD if self.aberto else patoFD
-               self.pos=(self.pos[0]+TS,self.pos[1]) #moves right
+         elif self.pos[1]==232 and 414>=self.pos[0]>=8:
+            self.img=patoAD if self.aberto else patoFD
+            self.pos=(self.pos[0]+2,self.pos[1]) #moves right
 
-           elif self.pos[0]==TS*1 and TS*68>=self.pos[1]>=TS*30:
-               self.img=patoAC if self.aberto else patoFC
-               self.pos=(self.pos[0],self.pos[1]-TS) #moves up
+         elif self.pos[0]==8 and 544>=self.pos[1]>=230:
+            self.img=patoAC if self.aberto else patoFC
+            self.pos=(self.pos[0],self.pos[1]-2) #moves up
 
    #creating classes        
    header=Header()
@@ -210,67 +210,71 @@ def run():
    credits_menu = False
    play_music('menu_music.wav',game_volume/200)
    while True:
-       clock.tick(15)
+      clock.tick(40)
 
-       for event in pygame.event.get():
+      for event in pygame.event.get():
 
-               if event.type == pygame.QUIT:
-                   pygame.quit() #Quit game
+         if event.type == pygame.QUIT:
+            pygame.quit() #Quit game
 
-               #Directions keys
-               if event.type == KEYDOWN:
-                   if event.key == K_UP:
-                       cursor.direction = UP
-                   if event.key == K_DOWN:
-                       cursor.direction = DOWN
-                   if event.key == K_LEFT:
-                       cursor.direction = LEFT
-                   if event.key == K_RIGHT:
-                       cursor.direction = RIGHT
+         #Directions keys
+         if event.type == KEYDOWN:
+            if event.key == K_UP:
+               cursor.direction = UP
+            if event.key == K_DOWN:
+               cursor.direction = DOWN
+            if event.key == K_LEFT:
+               cursor.direction = LEFT
+            if event.key == K_RIGHT:
+               cursor.direction = RIGHT
                    
-                   if event.key == K_RETURN:
-                       if menu.type == "Main Menu":
-                           if cursor.index == 0:
-                               menu = Start_Menu()
-                           elif cursor.index == 1:
-                               menu = Settings_Menu()
-                           elif cursor.index == 2:
-                               menu = Credits_Menu()
-                           elif cursor.index == 3:
-                               pygame.quit()
-                           cursor.index = 0 #initialize cursor on the top of new menu
+            if event.key == K_RETURN:
+               if menu.type == "Main Menu":
+                  if cursor.index == 0:
+                     menu = Start_Menu()
+                  elif cursor.index == 1:
+                     menu = Settings_Menu()
+                  elif cursor.index == 2:
+                     menu = Credits_Menu()
+                  elif cursor.index == 3:
+                     pygame.quit()
+                  
+                  cursor.index = 0 #reinitialize cursor on the top of new menu
 
-                       elif menu.type == "Start Menu":
-                           if cursor.pos() == menu.positions[0]:   #start level 1
-                               level1.setup(game_volume/200,False)
-                           elif cursor.pos() == menu.positions[1]: #start level 1
-                               level1.setup(game_volume/200,True)
-                           elif cursor.pos() == menu.positions[2]: #return buttom
-                               menu = Main_Menu()
-                           cursor.index = 0 #reinitialize cursor in the main menu on the right position
+               elif menu.type == "Start Menu":
+                  if cursor.pos() == menu.positions[0]:   #start level 1
+                     level1.setup(game_volume/200,False)
+                  elif cursor.pos() == menu.positions[1]: #start level 1
+                     level1.setup(game_volume/200,True)
+                  elif cursor.pos() == menu.positions[2]: #return buttom
+                      menu = Main_Menu()
+                  
+                  cursor.index = 0 #reinitialize cursor in the main menu on the right position
 
-                       elif menu.type == "Settings Menu":
-                           if cursor.pos() == menu.positions[0]: #already handled in cursor.move
-                               pass
-                           if cursor.pos() == menu.positions[1]: #return buttom
-                               menu = Main_Menu()
-                           cursor.index = 1 #reinitialize cursor in the main menu on the right position
+               elif menu.type == "Settings Menu":
+                  if cursor.pos() == menu.positions[0]: #already handled in cursor.move
+                     pass
+                  if cursor.pos() == menu.positions[1]: #return buttom
+                     menu = Main_Menu()
+           
+                  cursor.index = 1 #reinitialize cursor in the main menu on the right position
 
-                       elif menu.type == "Credits Menu":
-                           if cursor.pos() == menu.positions[0]: #return buttom
-                               menu = Main_Menu()
-                           cursor.index = 2 #reinitialize cursor in the main menu on the right position
+               elif menu.type == "Credits Menu":
+                  if cursor.pos() == menu.positions[0]: #return buttom
+                     menu = Main_Menu()
+            
+                  cursor.index = 2 #reinitialize cursor in the main menu on the right position
 
-       screen.fill((0, 0, 0)) #Display objects on screen
-       header.display() #Displays header
-       animation.animate() #Shows duck animation
-       cursor.move() #Moves cursor
-       cursor.display() #Displays cursor
-       pygame.mixer.music.set_volume(game_volume/200)#update menu song volume
+      screen.fill((0, 0, 0)) #Display objects on screen
+      header.display() #Displays header
+      animation.animate() #Shows duck animation
+      cursor.move() #Moves cursor
+      cursor.display() #Displays cursor
+      pygame.mixer.music.set_volume(game_volume/200)#update menu song volume
 
-       if main_menu == True:
-           menu.display() #Displays menu
-       pygame.display.update()
+      if main_menu == True:
+         menu.display() #Displays menu
+      pygame.display.update()
 
 if __name__=='__main__':
    run()
