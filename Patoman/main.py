@@ -635,7 +635,7 @@ def setup(volume,is_gamer):
                   pause_game()
 
          #Handles player movement
-         player.time+=player.speed
+         player.time+=player.speed+15
          for qtd in range((player.time // 100) * 2):
             player.move()
             player.collision_CP()
@@ -645,7 +645,7 @@ def setup(volume,is_gamer):
          player.aberto=not player.aberto
 
          for i in range(4):
-            phantom[i].time+=phantom[i].speed
+            phantom[i].time+=phantom[i].speed+15
             for j in range((phantom[i].time//100) * 2):
                phantom[i].move(player.pos[1], player.pos[0], player.direct, 0, 0, 0)
             phantom[i].time=phantom[i].time%100
